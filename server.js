@@ -101,3 +101,6 @@ server.put("/items/:id", (req, res) => {
     db.movies.save(movie);
  }
  console.log(db.movies.find());
+
+
+ //kuuenda juures pooleli. https://dev.to/lenmorld/quick-database-with-node-express-and-diskdb-in-5-minutes-1jjj
