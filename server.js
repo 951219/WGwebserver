@@ -1,8 +1,12 @@
 const express = require('express');
 const server = express();
-const body_parser = require('body-parser')
 
+const body_parser = require('body-parser')
 server.use(body_parser.json());
+
+const db = require('diskdb');
+db.connect('./data', ['movies']);
+// The syntax is: db.connect('/path/to/db-folder', ['collection-name']);
 
 // add json route handler
 server.get("/json", (req, res) => {
@@ -10,9 +14,6 @@ server.get("/json", (req, res) => {
         message: "Hello world"
     });
 });
-
-
-
 
 //add html route handler
 server.get("/", (req, res) => {
@@ -92,6 +93,11 @@ server.put("/items/:id", (req, res) => {
     const filtered_list = data.filter(item => item.id !== itemId);
  
     data = filtered_list;
- 
     res.json(data);
  });
+
+ if (!db.movies.find().length) {
+    const movie = { id: "tt0110358", name: "The Tiger King", genre: "animation" };
+    db.movies.save(movie);
+ }
+ console.log(db.movies.find());
