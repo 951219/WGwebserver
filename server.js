@@ -7,7 +7,7 @@ server.use(body_parser.json());
 const db = require('diskdb');
 db.connect('./data', ['movies']);
 // The syntax is: db.connect('/path/to/db-folder', ['collection-name']);
-
+// 
 // add json route handler
 server.get("/json", (req, res) => {
     res.json({
@@ -99,6 +99,27 @@ if (!db.movies.find().length) {
     db.movies.save(movie);
 }
 console.log(db.movies.find());
+
+
+
+// if (!db.words.find().length) {
+    
+
+//     for(
+
+//         //lengs of txt file
+//     ){
+//     const movie = {
+//         id: "tt0110358",
+//         name: "The Tiger King",
+//         genre: "animation"
+//     };
+//     db.movies.save(movie);
+
+//     };
+
+// }
+// console.log('Words in db: ' + db.words.find().length());
 
 
 //kuuenda juures pooleli. https://dev.to/lenmorld/quick-database-with-node-express-and-diskdb-in-5-minutes-1jjj
