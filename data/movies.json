@@ -1,11 +1,1 @@
-[{
-    "id": "tt0110357",
-    "name": "The Lion King",
-    "genre": "animation",
-    "_id": "773004099a21472e83596d2a7cc918ae"
-}, {
-    "id": "tt0110358",
-    "name": "The Tiger King",
-    "genre": "animation",
-    "_id": "11f17d2ec42e4b5d8214527289f756ff"
-}]
+[{"id":"6","name":"The Lion King","genre":"animation","_id":"773004099a21472e83596d2a7cc918ae"},{"id":"5","name":"The Tiger King","genre":"animation","_id":"11f17d2ec42e4b5d8214527289f756ff"},{"id":"1","name":"Cat King","genre":"animation","_id":"bf1b9770a58d4acea164d3fd995afb8d"},{"id":"2","name":"Dob King","genre":"animation","_id":"9be9691c05fc42218bcb79252cb10629"},{"id":"4","name":"Monkey","genre":"animation","_id":"e4fcb82ddd6d42c4a303381a77d9677b"},{"id":"3","name":"banana maasikaga4","genre":"animation","_id":"fb088bf3cfdb47a9b02248c50b57fa4d"}]
