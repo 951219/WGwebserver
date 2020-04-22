@@ -5,24 +5,25 @@ const body_parser = require('body-parser')
 server.use(body_parser.json());
 
 const db = require('diskdb');
-db.connect('./data', ['movies']);
+db.connect('./data', ['words']);
 // The syntax is: db.connect('/path/to/db-folder', ['collection-name']);
-// 
+
+
 // add json route handler
-server.get("/json", (req, res) => {
-    res.json({
-        message: "Hello world"
-    });
-});
+// server.get("/json", (req, res) => {
+//     res.json({
+//         message: "Hello world"
+//     });
+// });
 
 //add html route handler
-server.get("/", (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
+// server.get("/", (req, res) => {
+//     res.sendFile(__dirname + '/index.html');
+// });
 
-server.get("/info", (req, res) => {
-    res.sendFile(__dirname + '/info.html');
-});
+// server.get("/info", (req, res) => {
+//     res.sendFile(__dirname + '/info.html');
+// });
 
 //start server 
 
@@ -35,54 +36,60 @@ server.listen(port, () => {
 
 // CRUD / REST / DISKDB
 
-server.get("/items", (req, res) => {
-    res.json(db.movies.find());
+// works
+server.get("/words", (req, res) => {
+    res.json(db.words.find());
 });
 
-server.get("/items/:id", (req, res) => {
-    const itemId = req.params.id;
-    const items = db.movies.find({ id: itemId });
+// Works
+server.get("/words/:id", (req, res) => {
+    const reqId = req.params.id;
+    const items = db.words.find({ id: reqId })
+
+    
+    
+
     if (items.length) {
+        console.log('\nViewing words with an id of '+ reqId + "\nobject: " + JSON.stringify(items));
        res.json(items);
     } else {
-       res.json({ message: `item ${itemId} doesn't exist` })
+        console.log(`item ${reqId} doesn't exist`);
+        
+       res.json({ message: `item ${reqId} doesn't exist` })
     }
  });
 
-
-server.post("/items", (req, res) => {
+// Works
+server.post("/words", (req, res) => {
     const item = req.body;
-    console.log('Adding new item: ', item)
+    console.log('Adding new word: ', item)
 
-    db.movies.save(item);
+    db.words.save(item);
 
-    res.json(db.movies.find());
+    res.json(db.words.find());
 })
 
-
-//TODO put not working in postman - edit: id urli l6ppu
-server.put("/items/:id", (req, res) => {
+// Works
+server.put("/words/:id", (req, res) => {
     const itemId = req.params.id;
     const item = req.body;
-    console.log("Editing item: ", itemId, " to be ", item);
+    console.log("Editing words: ", itemId, " to be ", item);
  
-    db.movies.update({ id: itemId }, item);
+    db.words.update({ id: itemId }, item);
  
-    res.json(db.movies.find({ id: itemId }));
+    res.json(db.words.find({ id: itemId }));
  });
-
- //works with "curl -X PUT -H "Content-Type: application/json" --data '{"name": "banana vaarikaga"}' http://localhost:4000/items/3"
-
-
-server.delete("/items/:id", (req, res) => {
+ 
+ // Works
+server.delete("/words/:id", (req, res) => {
     const itemId = req.params.id;
-    console.log("Delete item with id: ", itemId);
+    console.log("Delete word with id: ", itemId);
 
-    db.movies.remove({
+    db.words.remove({
         id: itemId
     });
 
-    res.json(db.movies.find());
+    res.json(db.words.find());
 });
 
 
@@ -90,36 +97,28 @@ server.delete("/items/:id", (req, res) => {
 
 
 //testdata juhuks kui db tyhi
-if (!db.movies.find().length) {
-    const movie = {
-        id: "tt0110358",
-        name: "The Tiger King",
-        genre: "animation"
-    };
-    db.movies.save(movie);
-}
-console.log(db.movies.find());
+if (!db.words.find().length) {
 
+    var fs = require('fs');
 
-
-// if (!db.words.find().length) {
+    fs.readFile('wordsOld.txt', 'utf8', function(error, data) {
     
-
-//     for(
-
-//         //lengs of txt file
-//     ){
-//     const movie = {
-//         id: "tt0110358",
-//         name: "The Tiger King",
-//         genre: "animation"
-//     };
-//     db.movies.save(movie);
-
-//     };
-
-// }
-// console.log('Words in db: ' + db.words.find().length());
-
-
-//kuuenda juures pooleli. https://dev.to/lenmorld/quick-database-with-node-express-and-diskdb-in-5-minutes-1jjj
+    var lines = data.split('\n');
+    
+    for(var line = 0; line < lines.length; line++){
+        var sLine = lines[line];
+        sLine = sLine.split(' /// ');
+        
+        const word = {
+            id: line.toString(),
+            tries: sLine[0],
+            word: sLine[1],
+            definition: sLine[2]
+        };
+    
+        console.log(word);
+        
+        db.words.save(word);
+          }
+    });
+}
