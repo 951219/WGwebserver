@@ -27,10 +27,9 @@ db.connect('./data', ['words']);
 
 //start server 
 
-//const port = 4000;
-
-server.listen(process.env.PORT, () => {
-    //  console.log(`Server listening at ${port}`);
+const port = process.env.PORT;
+server.listen(port || 4000, () => {
+    console.log(`Server listening at ${port}`);
 });
 
 
