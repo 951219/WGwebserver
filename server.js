@@ -27,11 +27,11 @@ db.connect('./data', ['words']);
 
 //start server 
 
-// const port = 4000;
+const port = 4000;
 
-// server.listen(port, () => {
-//     console.log(`Server listening at ${port}`);
-// });
+server.listen(port, () => {
+    console.log(`Server listening at ${port}`);
+});
 
 
 // CRUD / REST / DISKDBga suhtlus
