@@ -34,7 +34,7 @@ server.listen(port, () => {
 });
 
 
-// CRUD / REST / DISKDB
+// CRUD / REST / DISKDBga suhtlus
 
 // works
 server.get("/words", (req, res) => {
@@ -44,20 +44,21 @@ server.get("/words", (req, res) => {
 // Works
 server.get("/words/:id", (req, res) => {
     const reqId = req.params.id;
-    const items = db.words.find({ id: reqId })
-
-    
-    
+    const items = db.words.find({
+        id: reqId
+    })
 
     if (items.length) {
-        console.log('\nViewing words with an id of '+ reqId + "\nobject: " + JSON.stringify(items));
-       res.json(items);
+        console.log('\nViewing word with an id of ' + reqId + "\nobject: " + JSON.stringify(items));
+        res.json(items);
     } else {
         console.log(`item ${reqId} doesn't exist`);
-        
-       res.json({ message: `item ${reqId} doesn't exist` })
+
+        res.json({
+            message: `item ${reqId} doesn't exist`
+        })
     }
- });
+});
 
 // Works
 server.post("/words", (req, res) => {
@@ -74,13 +75,17 @@ server.put("/words/:id", (req, res) => {
     const itemId = req.params.id;
     const item = req.body;
     console.log("Editing words: ", itemId, " to be ", item);
- 
-    db.words.update({ id: itemId }, item);
- 
-    res.json(db.words.find({ id: itemId }));
- });
- 
- // Works
+
+    db.words.update({
+        id: itemId
+    }, item);
+
+    res.json(db.words.find({
+        id: itemId
+    }));
+});
+
+// Works
 server.delete("/words/:id", (req, res) => {
     const itemId = req.params.id;
     console.log("Delete word with id: ", itemId);
@@ -101,24 +106,30 @@ if (!db.words.find().length) {
 
     var fs = require('fs');
 
-    fs.readFile('wordsOld.txt', 'utf8', function(error, data) {
-    
-    var lines = data.split('\n');
-    
-    for(var line = 0; line < lines.length; line++){
-        var sLine = lines[line];
-        sLine = sLine.split(' /// ');
-        
-        const word = {
-            id: line.toString(),
-            tries: sLine[0],
-            word: sLine[1],
-            definition: sLine[2]
-        };
-    
-        console.log(word);
-        
-        db.words.save(word);
-          }
+    fs.readFile('wordsOld.txt', 'utf8', function (error, data) {
+
+        var lines = data.split('\n');
+
+        for (var line = 0; line < lines.length; line++) {
+            var sLine = lines[line];
+            sLine = sLine.split(' /// ');
+
+            const word = {
+                id: line.toString(),
+                tries: sLine[0],
+                word: sLine[1],
+                definition: sLine[2]
+            };
+
+            console.log(word);
+
+            db.words.save(word);
+        }
     });
 }
+
+
+server.use(function (req, res, next) {
+    res.setHeader("Content-Type", "application/json");
+    next();
+});
