@@ -16,31 +16,27 @@ db.connect('./data', ['words']);
 //     });
 // });
 
-//add html route handler
-// server.get("/", (req, res) => {
-//     res.sendFile(__dirname + '/index.html');
-// });
+// add html route handler
+server.get("/", (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
 // server.get("/info", (req, res) => {
 //     res.sendFile(__dirname + '/info.html');
 // });
 
 //start server 
-
 const port = process.env.PORT;
 server.listen(port || 4000, () => {
-    console.log(`Server listening at ${port}`);
+    console.log(`Server listening at ${port} or at 4000`);
 });
 
 
 // CRUD / REST / DISKDBga suhtlus
-
-// works
 server.get("/words", (req, res) => {
     res.json(db.words.find());
 });
 
-// Works
 server.get("/words/:id", (req, res) => {
     const reqId = req.params.id;
     const items = db.words.find({
@@ -59,7 +55,6 @@ server.get("/words/:id", (req, res) => {
     }
 });
 
-// Works
 server.post("/words", (req, res) => {
     const item = req.body;
     console.log('Adding new word: ', item)
@@ -69,7 +64,6 @@ server.post("/words", (req, res) => {
     res.json(db.words.find());
 })
 
-// Works
 server.put("/words/:id", (req, res) => {
     const itemId = req.params.id;
     const item = req.body;
@@ -84,7 +78,6 @@ server.put("/words/:id", (req, res) => {
     }));
 });
 
-// Works
 server.delete("/words/:id", (req, res) => {
     const itemId = req.params.id;
     console.log("Delete word with id: ", itemId);
@@ -96,8 +89,42 @@ server.delete("/words/:id", (req, res) => {
     res.json(db.words.find());
 });
 
+server.get("/words/random/:number", (req, res) => {
+    const randNumber = req.params.number;
 
+    var randItems = new Array();
 
+    for (var i = 0; i < randNumber; i++) {
+
+        //TODO check if duplicate
+
+        const numb = getRandomInt(getDBlength());
+
+        const item = db.words.find({
+            id: numb.toString()
+        })
+
+        if (item.length) {
+            console.log(`loop ${i} -  Adding word with an id of ` + numb);
+            //+ "\nobject: " + JSON.stringify(item)
+            randItems.push(item);
+        } else {
+            console.log(`loop ${i} - item ${numb} doesn't exist`);
+        }
+    }
+
+    res.json(randItems);
+});
+
+function getRandomInt(max) {
+    return Math.floor(
+        Math.random() * (max + 1)
+    )
+}
+
+function getDBlength() {
+    return db.words.find().length;
+}
 
 
 //testdata juhuks kui db tyhi
@@ -127,8 +154,5 @@ if (!db.words.find().length) {
     });
 }
 
-
-// server.use(function (req, res, next) {
-//     res.setHeader("Content-Type", "application/json");
-//     next();
-// });
+//TODO Is the word already in the db function?
+//TODO take from EKI / oxford dict etc
