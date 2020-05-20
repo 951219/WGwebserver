@@ -154,5 +154,48 @@ if (!db.words.find().length) {
     });
 }
 
-//TODO Is the word already in the db function?
+function isAlreadyinDB(word) {
+    const items = db.words.find({
+        word: word
+    });
+
+    if (items.length) {
+        console.log('\nViewing word from DB: ' + word + "\nobject: " + JSON.stringify(items));
+        return true;
+    } else {
+        console.log(`Word ${word} is not in DB`);
+
+        return false;
+    }
+}
 //TODO take from EKI / oxford dict etc
+
+//checking if the word exists in db by name
+server.get("/words/exists/:word", (req, res) => {
+    const wordFromUrl = req.params.word;
+
+    if (isAlreadyinDB(wordFromUrl)) {
+        res.json(true)
+    } else {
+        res.json(false)
+    };
+});
+
+//get word by name
+server.get("/words/getbyword/:word", (req, res) => {
+    const wordFromUrl = req.params.word;
+    const items = db.words.find({
+        word: wordFromUrl
+    })
+
+    if (items.length) {
+        console.log('\nViewing word: ' + wordFromUrl + "\nobject: " + JSON.stringify(items));
+        res.json(items);
+    } else {
+        console.log(`Word ${wordFromUrl} doesn't exist`);
+
+        res.json({
+            message: `Word ${wordFromUrl} doesn't exist`
+        })
+    }
+});
