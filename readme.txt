@@ -4,5 +4,6 @@ info siit: https://dev.to/lenmorld/quick-server-with-node-and-express-in-5-minut
 chrome extentsion: https://github.com/951219/WGCE
 android app: https://github.com/951219/DictionaryApp/
 terminal app: https://github.com/951219/WordQuesser
+flutter app: ...
 
 to read: https://github.com/lenmorld/node_workshop
