@@ -55,6 +55,22 @@ server.get("/words/:id", (req, res) => {
     }
 });
 
+server.get("/wordsobject/:id", (req, res) => {
+    const reqId = req.params.id;
+    const [items] = db.words.find({
+        id: reqId
+    })
+
+    if (items != null) {
+        res.json(items);
+    } else {
+        res.json({
+            message: `item ${reqId} doesn't exist`
+        })
+    }
+
+});
+
 server.post("/words", (req, res) => {
     const item = req.body;
     console.log('Adding new word: ', item)
