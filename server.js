@@ -4,6 +4,7 @@ const server = express();
 const body_parser = require('body-parser')
 server.use(body_parser.json());
 
+
 const db = require('diskdb');
 db.connect('./data', ['words']);
 // The syntax is: db.connect('/path/to/db-folder', ['collection-name']);
