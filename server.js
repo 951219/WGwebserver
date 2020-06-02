@@ -1,5 +1,6 @@
 const express = require('express');
 const server = express();
+const scrapers = require('./scrapers.js')
 
 const body_parser = require('body-parser')
 server.use(body_parser.json());
@@ -215,3 +216,9 @@ server.get("/words/getbyword/:word", (req, res) => {
         })
     }
 });
+
+server.get("/words/scrapefromeki/:word", (req, res) => {
+    // var word = req.word;
+    // var def = scrapers.scrapeDefinition(word.toString)
+    res.json('broken');
+})
