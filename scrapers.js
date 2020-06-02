@@ -20,7 +20,11 @@ async function scrapeDefinition(word) {
 
 }
 
-scrapeDefinition('lamp');
+module.exports = function () {
+    scrapeDefinition();
+}
+
+//????
 
 // module.exports = {
 //     scrapeDefinition: scrapeDefinition()
