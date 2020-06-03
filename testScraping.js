@@ -1,6 +1,2 @@
 const scrapers = require('./scrapers.js')
-
-
-
-
-scrapers.scrapeDefinition('test')
+scrapers.scrapeDefinition('productivne')
