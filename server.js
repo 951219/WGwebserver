@@ -72,39 +72,41 @@ server.get("/wordsobject/:id", (req, res) => {
 
 });
 
-server.post("/words", (req, res) => {
-    const item = req.body;
-    console.log('Adding new word: ', item)
+//TODO DISABLED FOR SAFETY
 
-    db.words.save(item);
+// server.post("/words", (req, res) => {
+//     const item = req.body;
+//     console.log('Adding new word: ', item)
 
-    res.json(db.words.find());
-})
+//     db.words.save(item);
 
-server.put("/words/:id", (req, res) => {
-    const itemId = req.params.id;
-    const item = req.body;
-    console.log("Editing words: ", itemId, " to be ", item);
+//     res.json(db.words.find());
+// })
 
-    db.words.update({
-        id: itemId
-    }, item);
+// server.put("/words/:id", (req, res) => {
+//     const itemId = req.params.id;
+//     const item = req.body;
+//     console.log("Editing words: ", itemId, " to be ", item);
 
-    res.json(db.words.find({
-        id: itemId
-    }));
-});
+//     db.words.update({
+//         id: itemId
+//     }, item);
 
-server.delete("/words/:id", (req, res) => {
-    const itemId = req.params.id;
-    console.log("Delete word with id: ", itemId);
+//     res.json(db.words.find({
+//         id: itemId
+//     }));
+// });
 
-    db.words.remove({
-        id: itemId
-    });
+// server.delete("/words/:id", (req, res) => {
+//     const itemId = req.params.id;
+//     console.log("Delete word with id: ", itemId);
 
-    res.json(db.words.find());
-});
+//     db.words.remove({
+//         id: itemId
+//     });
+
+//     res.json(db.words.find());
+// });
 
 server.get("/words/random/:number", (req, res) => {
     const randNumber = req.params.number;
