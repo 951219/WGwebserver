@@ -1,6 +1,7 @@
 const express = require('express');
 const server = express();
-const scrapers = require('./scrapers.js')
+// const scrapers = require('./scrapers.js')
+const cors = require('cors')
 
 const body_parser = require('body-parser')
 server.use(body_parser.json());
@@ -16,6 +17,8 @@ db.connect('./data', ['words']);
 //         message: "Hello world"
 //     });
 // });
+server.use(cors());
+
 
 // add html route handler
 server.get("/", (req, res) => {
