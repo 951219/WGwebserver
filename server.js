@@ -11,6 +11,8 @@ db.connect('./data', ['words']);
 // The syntax is: db.connect('/path/to/db-folder', ['collection-name']);
 
 
+var safeModeActivated = true;
+
 // add json route handler
 // server.get("/json", (req, res) => {
 //     res.json({
@@ -38,18 +40,19 @@ server.listen(port || 4000, () => {
 
 // CRUD / REST / DISKDBga suhtlus
 server.get("/words", (req, res) => {
+
     res.json(db.words.find());
 });
 
 server.get("/words/:id", (req, res) => {
     const reqId = req.params.id;
-    const items = db.words.find({
+    const item = db.words.findOne({
         id: reqId
     })
 
-    if (items.length) {
-        console.log('\nViewing word with an id of ' + reqId + "\nobject: " + JSON.stringify(items));
-        res.json(items);
+    if (item != null) {
+        console.log('\nViewing word with an id of ' + reqId + "\nobject: " + JSON.stringify(item));
+        res.json(item);
     } else {
         console.log(`item ${reqId} doesn't exist`);
 
@@ -75,41 +78,106 @@ server.get("/wordsobject/:id", (req, res) => {
 
 });
 
-//TODO DISABLED FOR SAFETY
+server.get("/safety/:bool", (req, res) => {
+    const bool = req.params.bool;
+    res.json({
 
-// server.post("/words", (req, res) => {
-//     const item = req.body;
-//     console.log('Adding new word: ', item)
+        message: changeSafeModeTo(bool),
+        safemode: safeModeActivated
+    }
+    )
+});
 
-//     db.words.save(item);
 
-//     res.json(db.words.find());
-// })
 
-// server.put("/words/:id", (req, res) => {
-//     const itemId = req.params.id;
-//     const item = req.body;
-//     console.log("Editing words: ", itemId, " to be ", item);
+function changeSafeModeTo(bool) {
 
-//     db.words.update({
-//         id: itemId
-//     }, item);
+    if (bool == 'true') {
+        if (safeModeActivated == false) {
+            safeModeActivated = true;
+            return 'safe mode activated';
 
-//     res.json(db.words.find({
-//         id: itemId
-//     }));
-// });
+        } else {
+            return 'safe mode already activated';
+        }
+    } else if (bool == 'false') {
 
-// server.delete("/words/:id", (req, res) => {
-//     const itemId = req.params.id;
-//     console.log("Delete word with id: ", itemId);
+        if (safeModeActivated == true) {
+            safeModeActivated = false;
+            return 'safe mode disabled';
 
-//     db.words.remove({
-//         id: itemId
-//     });
+        } else {
 
-//     res.json(db.words.find());
-// });
+            return 'safe mode already disabled';
+
+        }
+
+    } else {
+        return 'unknown request';
+    }
+}
+
+server.post("/words", (req, res) => {
+
+    if (!safeModeActivated) {
+        const item = req.body;
+        console.log('Adding new word: ', item)
+
+        db.words.save(item);
+
+        res.json(db.words.find());
+    }
+    else {
+        res.json({ message: 'No access' })
+    }
+})
+
+server.put("/words/:id", (req, res) => {
+    if (!safeModeActivated) {
+        const itemId = req.params.id;
+        const item = req.body;
+        console.log("Editing words: ", itemId, " to be ", item);
+
+        db.words.update({
+            id: itemId
+        }, item);
+
+        res.json(db.words.find({
+            id: itemId
+        }));
+    } else {
+        res.json({ message: 'No access' })
+    }
+});
+
+server.delete("/words/:id", (req, res) => {
+    if (!safeModeActivated) {
+        const itemId = req.params.id;
+        console.log("Delete word with id: ", itemId);
+
+        db.words.remove({
+            id: itemId
+        });
+
+        res.json(db.words.find());
+    } else {
+        res.json({ message: 'No access' })
+    }
+});
+
+server.get("/words/exists/:word", (req, res) => {
+    if (!safeModeActivated) {
+        const wordFromUrl = req.params.word;
+
+        if (isAlreadyinDB(wordFromUrl)) {
+            res.json(true)
+        } else {
+            res.json(false)
+        };
+    } else {
+        res.json({ message: 'No access' })
+    }
+});
 
 server.get("/words/random/:number", (req, res) => {
     const randNumber = req.params.number;
@@ -120,7 +188,7 @@ server.get("/words/random/:number", (req, res) => {
 
         //TODO check if duplicate
 
-        const numb = getRandomInt(getDBlength());
+        const numb = getRandomInt(db.words.find().length);
 
         const item = db.words.find({
             id: numb.toString()
@@ -143,11 +211,6 @@ function getRandomInt(max) {
         Math.random() * (max + 1)
     )
 }
-
-function getDBlength() {
-    return db.words.find().length;
-}
-
 
 //testdata juhuks kui db tyhi
 if (!db.words.find().length) {
@@ -193,15 +256,19 @@ function isAlreadyinDB(word) {
 //TODO take from EKI / oxford dict etc
 
 //checking if the word exists in db by name
-server.get("/words/exists/:word", (req, res) => {
-    const wordFromUrl = req.params.word;
+// server.get("/words/exists/:word", (req, res) => {
+//     if (!safeModeActivated) {
+//         const wordFromUrl = req.params.word;
 
-    if (isAlreadyinDB(wordFromUrl)) {
-        res.json(true)
-    } else {
-        res.json(false)
-    };
-});
+//         if (isAlreadyinDB(wordFromUrl)) {
+//             res.json(true)
+//         } else {
+//             res.json(false)
+//         };
+//     } else {
+//         res.json({ message: 'No access' })
+//     }
+// });
 
 //get word by name
 server.get("/words/getbyword/:word", (req, res) => {
