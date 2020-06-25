@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
-async function scrapeDefinition(word) {
-    var url = 'http://eki.ee/dict/ekss/index.cgi?Q=' + word + '&F=M';
+async function scrapeDefinition(inWord) {
+    var url = 'http://eki.ee/dict/ekss/index.cgi?Q=' + inWord + '&F=M';
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -36,7 +36,7 @@ async function scrapeDefinition(word) {
         };
 
     } catch (error) {
-        console.log(error + '\nelement not found')
+        console.log(inWord + ' element not found \n' + error)
     }
 }
 
