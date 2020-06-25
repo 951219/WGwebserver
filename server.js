@@ -181,29 +181,50 @@ server.get("/words/exists/:word", (req, res) => {
 
 server.get("/words/random/:number", (req, res) => {
     const randNumber = req.params.number;
+    if (randNumber != 1) {
+        var randItems = new Array();
 
-    var randItems = new Array();
+        for (var i = 0; i < randNumber; i++) {
 
-    for (var i = 0; i < randNumber; i++) {
+            //TODO check if duplicate
 
-        //TODO check if duplicate
+            const numb = getRandomInt(db.words.find().length);
+
+            const item = db.words.find({
+                id: numb.toString()
+            })
+
+            if (item.length) {
+                console.log(`loop ${i} -  Adding word with an id of ` + numb);
+                //+ "\nobject: " + JSON.stringify(item)
+                randItems.push(item);
+            } else {
+                console.log(`loop ${i} - item ${numb} doesn't exist`);
+            }
+        }
+
+        res.json(randItems);
+    } else {
 
         const numb = getRandomInt(db.words.find().length);
 
-        const item = db.words.find({
+        const item = db.words.findOne({
             id: numb.toString()
         })
 
-        if (item.length) {
-            console.log(`loop ${i} -  Adding word with an id of ` + numb);
-            //+ "\nobject: " + JSON.stringify(item)
-            randItems.push(item);
+        if (!item.length) {
+            console.log(`${item.word} - randobly pulled `);
+            res.json(item)
         } else {
-            console.log(`loop ${i} - item ${numb} doesn't exist`);
+            const mm = `id ${numb} did not get any results from db`
+            console.log(mm);
+            res.json({
+                message: mm
+            })
         }
-    }
 
-    res.json(randItems);
+
+    }
 });
 
 function getRandomInt(max) {
