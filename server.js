@@ -81,7 +81,6 @@ server.get("/wordsobject/:id", (req, res) => {
 server.get("/safety/:bool", (req, res) => {
     const bool = req.params.bool;
     res.json({
-
         message: changeSafeModeTo(bool),
         safemode: safeModeActivated
     }
@@ -181,51 +180,37 @@ server.get("/words/exists/:word", (req, res) => {
 
 server.get("/words/random/:number", (req, res) => {
     const randNumber = req.params.number;
-    if (randNumber != 1) {
-        var randItems = new Array();
+    var randItems = new Array();
+    var arrayIDs = new Array();
 
-        for (var i = 0; i < randNumber; i++) {
-
-            //TODO check if duplicate
-
-            const numb = getRandomInt(db.words.find().length);
-
-            const item = db.words.find({
-                id: numb.toString()
-            })
-
-            if (item.length) {
-                console.log(`loop ${i} -  Adding word with an id of ` + numb);
-                //+ "\nobject: " + JSON.stringify(item)
-                randItems.push(item);
-            } else {
-                console.log(`loop ${i} - item ${numb} doesn't exist`);
-            }
-        }
-
-        res.json(randItems);
-    } else {
+    for (var i = 0; i < randNumber; i++) {
 
         const numb = getRandomInt(db.words.find().length);
 
         const item = db.words.findOne({
             id: numb.toString()
         })
+        console.log(`loop ${i} - Adding word with an id of ` + numb);
+        if (item !== undefined) {
+            if (!arrayIDs.includes(item.id)) {
+                arrayIDs.push(item.id);
+                randItems.push(item);
+            } else {
+                console.log(`loop ${i} - duplicate item not added, id: ${item.id}`);
+                i--;
+            }
 
-        if (!item.length) {
-            console.log(`${item.word} - randobly pulled `);
-            res.json(item)
         } else {
-            const mm = `id ${numb} did not get any results from db`
+            const mm = `id ${numb} did not get any results from db, this item is undefined`
             console.log(mm);
-            res.json({
-                message: mm
-            })
+            i--;
         }
-
-
     }
+    res.json(randItems);
 });
+
+
+
 
 function getRandomInt(max) {
     return Math.floor(
