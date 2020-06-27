@@ -1,46 +1,5 @@
 const puppeteer = require('puppeteer');
 
-// async function scrapeDefinition(inWord) {
-//     var url = 'http://eki.ee/dict/ekss/index.cgi?Q=' + inWord + '&F=M';
-//     try {
-//         const browser = await puppeteer.launch();
-//         const page = await browser.newPage();
-//         await page.goto(url);
-
-//         const word = await page.evaluate(() => document.querySelector('.leitud_ss').textContent);
-//         const text = await page.evaluate(() => document.querySelector('.d').textContent);
-//         const example = await page.evaluate(() => document.querySelector('.n').textContent);
-
-//         //if(element .c existsi){
-//         // const example2 = await page.evaluate(() => document.querySelector('.c').textContent);
-//         // const example2author = await page.evaluate(() => document.querySelector('.caut').textContent);
-
-//         // }
-//         //works for words with a single definition
-
-//         browser.close()
-
-//         console.log({
-//             word,
-//             text,
-//             example,
-//             // example2,
-//             // example2author
-//         });
-//         return {
-//             word,
-//             text,
-//             example,
-//             // example2,
-//             // example2author
-//         };
-
-//     } catch (error) {
-//         console.log(inWord + ' element not found \n' + error)
-//     }
-// }
-
-
 
 //works for words with with multiple definitions and multiple examples
 async function scrapeWordFromEKI(inWord) {
@@ -62,7 +21,9 @@ async function scrapeWordFromEKI(inWord) {
         // checks if example element is present, if it is then returns value, if not then null
         var example;
         try {
-            await page.waitForSelector('.n', { timeout: 2000 })
+            await page.waitForSelector('.n', {
+                timeout: 2000
+            })
             example = await page.evaluate(() => Array.from(document.querySelectorAll('.n'), e => e.textContent));
         } catch (error) {
             example = null;
@@ -72,12 +33,12 @@ async function scrapeWordFromEKI(inWord) {
 
         browser.close()
 
-        console.log('Scraping result: ', {
-            word,
-            definition,
-            example,
-            tries: 0
-        });
+        // console.log('Scraping result: ', {
+        //     word,
+        //     definition,
+        //     example,
+        //     tries: 0
+        // });
 
 
         const wordNew = {
@@ -92,8 +53,6 @@ async function scrapeWordFromEKI(inWord) {
     } catch (error) {
         console.log(inWord + ' element not found \n' + error)
     }
-
-
 }
 
 module.exports = {
