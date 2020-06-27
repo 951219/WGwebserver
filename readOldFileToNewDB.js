@@ -9,7 +9,7 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
 
     var lines = data.split('\n');
 
-    for (var line = 0; line < 15; line++) {
+    for (var line = 0; line < 10; line++) {
 
         var sLine = lines[line];
         sLine = sLine.split(' /// ');
@@ -28,6 +28,8 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
             }) === undefined) {
 
             var scrapedWord = await scrapers.scrapeWordFromEKI(word.word);
+
+            scrapedWord["index"] = line;
 
             console.log(scrapedWord);
             db.wordsNew.save(scrapedWord);
