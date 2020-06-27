@@ -12,7 +12,23 @@ async function scrapeWordFromEKI(inWord) {
 
 
         // gets the found word to prevent typos in the url
-        const word = await page.evaluate(() => document.querySelector('.leitud_ss').textContent);
+        var word;
+        try {
+            word = await page.evaluate(() => document.querySelector('.leitud_ss').textContent);
+        } catch (error) {
+
+            console.log(error.message);
+            console.log(`The element '.leitud_ss' didn't appear for ${inWord}, trying 'leitud_id' instead`);
+
+            try {
+                word = await page.evaluate(() => document.querySelector('.leitud_id').textContent);
+            } catch (error) {
+                console.log(error.message);
+                console.log(`The element '.leitud_id' didn't appear for ${inWord}, returning null`);
+                word = null;
+                return;
+            }
+        }
 
         // checks if the word is a homonym(has multiple meanings) and adds them to array
         const definition = await page.evaluate(() => Array.from(document.querySelectorAll('.d'), e => e.textContent));
