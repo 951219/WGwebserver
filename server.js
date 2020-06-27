@@ -47,7 +47,7 @@ server.get("/words", (req, res) => {
 server.get("/words/:id", (req, res) => {
     const reqId = req.params.id;
     const item = db.words.findOne({
-        id: reqId
+        index: reqId
     })
 
     if (item != null) {
@@ -62,21 +62,6 @@ server.get("/words/:id", (req, res) => {
     }
 });
 
-server.get("/wordsobject/:id", (req, res) => {
-    const reqId = req.params.id;
-    const [items] = db.words.find({
-        id: reqId
-    })
-
-    if (items != null) {
-        res.json(items);
-    } else {
-        res.json({
-            message: `item ${reqId} doesn't exist`
-        })
-    }
-
-});
 
 server.get("/safety/:bool", (req, res) => {
     const bool = req.params.bool;
@@ -89,7 +74,6 @@ server.get("/safety/:bool", (req, res) => {
 
 
 function changeSafeModeTo(bool) {
-
     if (bool == 'true') {
         if (safeModeActivated == false) {
             safeModeActivated = true;
@@ -105,9 +89,7 @@ function changeSafeModeTo(bool) {
             return 'safe mode disabled';
 
         } else {
-
             return 'safe mode already disabled';
-
         }
 
     } else {
@@ -138,11 +120,11 @@ server.put("/words/:id", (req, res) => {
         console.log("Editing words: ", itemId, " to be ", item);
 
         db.words.update({
-            id: itemId
+            index: itemId
         }, item);
 
         res.json(db.words.find({
-            id: itemId
+            index: itemId
         }));
     } else {
         res.json({
@@ -154,10 +136,10 @@ server.put("/words/:id", (req, res) => {
 server.delete("/words/:id", (req, res) => {
     if (!safeModeActivated) {
         const itemId = req.params.id;
-        console.log("Delete word with id: ", itemId);
+        console.log("Delete word with index: ", itemId);
 
         db.words.remove({
-            id: itemId
+            index: itemId
         });
 
         res.json(db.words.find());
@@ -194,15 +176,15 @@ server.get("/words/random/:number", (req, res) => {
         const numb = getRandomInt(db.words.find().length);
 
         const item = db.words.findOne({
-            id: numb.toString()
+            index: numb.toString()
         })
         console.log(`loop ${i} - Adding word with an id of ` + numb);
         if (item !== undefined) {
-            if (!arrayIDs.includes(item.id)) {
-                arrayIDs.push(item.id);
+            if (!arrayIDs.includes(item.index)) {
+                arrayIDs.push(item.index);
                 randItems.push(item);
             } else {
-                console.log(`loop ${i} - duplicate item not added, id: ${item.id}`);
+                console.log(`loop ${i} - duplicate item not added, index: ${item.index}`);
                 i--;
             }
 
@@ -216,40 +198,12 @@ server.get("/words/random/:number", (req, res) => {
 });
 
 
-
-
 function getRandomInt(max) {
     return Math.floor(
         Math.random() * (max + 1)
     )
 }
 
-//testdata juhuks kui db tyhi
-// if (!db.words.find().length) {
-
-//     var fs = require('fs');
-
-//     fs.readFile('wordsOld.txt', 'utf8', function (error, data) {
-
-//         var lines = data.split('\n');
-
-//         for (var line = 0; line < lines.length; line++) {
-//             var sLine = lines[line];
-//             sLine = sLine.split(' /// ');
-
-//             const word = {
-//                 id: line.toString(),
-//                 tries: sLine[0],
-//                 word: sLine[1],
-//                 definition: sLine[2]
-//             };
-
-//             console.log(word);
-
-//             db.words.save(word);
-//         }
-//     });
-// }
 
 function isAlreadyinDB(word) {
     const items = db.words.find({
@@ -265,22 +219,7 @@ function isAlreadyinDB(word) {
         return false;
     }
 }
-//TODO take from EKI / oxford dict etc
 
-//checking if the word exists in db by name
-// server.get("/words/exists/:word", (req, res) => {
-//     if (!safeModeActivated) {
-//         const wordFromUrl = req.params.word;
-
-//         if (isAlreadyinDB(wordFromUrl)) {
-//             res.json(true)
-//         } else {
-//             res.json(false)
-//         };
-//     } else {
-//         res.json({ message: 'No access' })
-//     }
-// });
 
 //get word by name
 server.get("/words/getbyword/:word", (req, res) => {
@@ -301,6 +240,8 @@ server.get("/words/getbyword/:word", (req, res) => {
     }
 });
 
+
+//TODO get from oxford dict 
 
 //workds //TODO check if word is available and then return it from the DB instead?
 server.get("/words/scrapefromeki/:word", async (req, res) => {

@@ -38,7 +38,7 @@ async function scrapeWordFromEKI(inWord) {
         var example;
         try {
             await page.waitForSelector('.n', {
-                timeout: 3000
+                timeout: 2000
             })
             example = await page.evaluate(() => Array.from(document.querySelectorAll('.n'), e => e.textContent));
         } catch (error) {

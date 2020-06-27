@@ -2,7 +2,7 @@ var fs = require('fs');
 const scrapers = require('./scrapers');
 const db = require('diskdb');
 
-db.connect('./data', ['wordsNew']);
+db.connect('./data', ['words']);
 db.connect('./data', ['unusedIndexes']);
 db.connect('./data', ['lookInto']);
 
@@ -10,7 +10,7 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
 
     var lines = data.split('\n');
 
-    for (var line = 12; line < 20; line++) {
+    for (var line = 0; line < lines.length; line++) {
 
         var sLine = lines[line];
         sLine = sLine.split(' /// ');
@@ -25,44 +25,51 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
         console.log(`loop ${line} - Sent to scraping: ${word.word}`);
 
         //checks for duplicates
-        if (db.wordsNew.findOne({
+        if (db.words.findOne({
                 word: word.word
             }) === undefined) {
 
             var scrapedWord = await scrapers.scrapeWordFromEKI(word.word);
 
-            if (db.wordsNew.findOne({
+            if (db.words.findOne({
                     word: scrapedWord.word
                 }) === undefined) {
 
                 //checks for other anomalies
                 if (scrapedWord.word != null) {
 
-                    scrapedWord["index"] = line;
+                    scrapedWord["index"] = line.toString();
 
                     console.log(scrapedWord);
-                    db.wordsNew.save(scrapedWord);
+                    db.words.save(scrapedWord);
 
                 } else {
                     //if something is broken
                     db.unusedIndexes.save({
+                        word: word.word,
                         id: line
+
                     })
 
                     db.lookInto.save({
-                        word: word.word
+                        word: word.word,
+                        ekiWord: scrapedWord.word,
+                        id: line
                     })
 
                     console.log(`Something is broken: ${word.word} added to lookInto.json, index ${line} added to unusedIndexes.json`);
 
                 }
             } else {
-
+                // if duplicate found according to the EKI response
 
                 db.lookInto.save({
-                    word: word.word
+                    word: word.word,
+                    ekiWord: scrapedWord.word,
+                    id: line
                 })
                 db.unusedIndexes.save({
+                    word: word.word,
                     id: line
                 })
                 console.log(`Duplicate word found, when it got corrected by EKI response: ${word.word} vs ${scrapedWord.word}, ${line} id added to id DB`);
@@ -72,6 +79,7 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
         } else {
             // if duplicate found
             db.unusedIndexes.save({
+                word: word.word,
                 id: line
             })
             console.log(`Duplicate word ${word.word}, ${line} id added to id DB`);
