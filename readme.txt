@@ -1,9 +1,10 @@
-info siit: https://dev.to/lenmorld/quick-server-with-node-and-express-in-5-minutes-17m7
+Word Guesser.
+
+Web server: https://github.com/951219/WGwebserver
+Chrome extentsion: https://github.com/951219/WGCE
+Flutter app: https://github.com/951219/WGapp
 
 
-chrome extentsion: https://github.com/951219/WGCE
-android app: https://github.com/951219/DictionaryApp/
-terminal app: https://github.com/951219/WordQuesser
-flutter app: ...
-
-to read: https://github.com/lenmorld/node_workshop
+History:
+Second vesion as an android app: https://github.com/951219/DictionaryApp/
+Fist version as a terminal program: https://github.com/951219/WordQuesser/
