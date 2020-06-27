@@ -1,45 +1,101 @@
 const puppeteer = require('puppeteer');
 
-async function scrapeDefinition(inWord) {
+// async function scrapeDefinition(inWord) {
+//     var url = 'http://eki.ee/dict/ekss/index.cgi?Q=' + inWord + '&F=M';
+//     try {
+//         const browser = await puppeteer.launch();
+//         const page = await browser.newPage();
+//         await page.goto(url);
+
+//         const word = await page.evaluate(() => document.querySelector('.leitud_ss').textContent);
+//         const text = await page.evaluate(() => document.querySelector('.d').textContent);
+//         const example = await page.evaluate(() => document.querySelector('.n').textContent);
+
+//         //if(element .c existsi){
+//         // const example2 = await page.evaluate(() => document.querySelector('.c').textContent);
+//         // const example2author = await page.evaluate(() => document.querySelector('.caut').textContent);
+
+//         // }
+//         //works for words with a single definition
+
+//         browser.close()
+
+//         console.log({
+//             word,
+//             text,
+//             example,
+//             // example2,
+//             // example2author
+//         });
+//         return {
+//             word,
+//             text,
+//             example,
+//             // example2,
+//             // example2author
+//         };
+
+//     } catch (error) {
+//         console.log(inWord + ' element not found \n' + error)
+//     }
+// }
+
+
+
+//works for words with with multiple definitions and multiple examples
+async function scrapeWordFromEKI(inWord) {
     var url = 'http://eki.ee/dict/ekss/index.cgi?Q=' + inWord + '&F=M';
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto(url);
 
+
+
+        // gets the found word to prevent typos in the url
         const word = await page.evaluate(() => document.querySelector('.leitud_ss').textContent);
-        const text = await page.evaluate(() => document.querySelector('.d').textContent);
-        const example = await page.evaluate(() => document.querySelector('.n').textContent);
 
-        //if(element .c existsi){
-        // const example2 = await page.evaluate(() => document.querySelector('.c').textContent);
-        // const example2author = await page.evaluate(() => document.querySelector('.caut').textContent);
+        // checks if the word is a homonym(has multiple meanings) and adds them to array
+        const definition = await page.evaluate(() => Array.from(document.querySelectorAll('.d'), e => e.textContent));
 
-        // }
-        //works for words with a single definition
+
+        // checks if example element is present, if it is then returns value, if not then null
+        var example;
+        try {
+            await page.waitForSelector('.n', { timeout: 2000 })
+            example = await page.evaluate(() => Array.from(document.querySelectorAll('.n'), e => e.textContent));
+        } catch (error) {
+            example = null;
+            console.log("The element '.n' didn't appear for " + word);
+            console.log(error.message);
+        }
 
         browser.close()
 
-        console.log({
+        console.log('Scraping result: ', {
             word,
-            text,
+            definition,
             example,
-            // example2,
-            // example2author
+            tries: 0
         });
-        return {
-            word,
-            text,
-            example,
-            // example2,
-            // example2author
+
+
+        const wordNew = {
+            word: word,
+            definition: definition,
+            example: example,
+            tries: 0
         };
+
+        return wordNew;
 
     } catch (error) {
         console.log(inWord + ' element not found \n' + error)
     }
+
+
 }
 
 module.exports = {
-    scrapeDefinition
+    scrapeWordFromEKI
 }

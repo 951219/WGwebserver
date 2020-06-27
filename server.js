@@ -219,31 +219,31 @@ function getRandomInt(max) {
 }
 
 //testdata juhuks kui db tyhi
-if (!db.words.find().length) {
+// if (!db.words.find().length) {
 
-    var fs = require('fs');
+//     var fs = require('fs');
 
-    fs.readFile('wordsOld.txt', 'utf8', function (error, data) {
+//     fs.readFile('wordsOld.txt', 'utf8', function (error, data) {
 
-        var lines = data.split('\n');
+//         var lines = data.split('\n');
 
-        for (var line = 0; line < lines.length; line++) {
-            var sLine = lines[line];
-            sLine = sLine.split(' /// ');
+//         for (var line = 0; line < lines.length; line++) {
+//             var sLine = lines[line];
+//             sLine = sLine.split(' /// ');
 
-            const word = {
-                id: line.toString(),
-                tries: sLine[0],
-                word: sLine[1],
-                definition: sLine[2]
-            };
+//             const word = {
+//                 id: line.toString(),
+//                 tries: sLine[0],
+//                 word: sLine[1],
+//                 definition: sLine[2]
+//             };
 
-            console.log(word);
+//             console.log(word);
 
-            db.words.save(word);
-        }
-    });
-}
+//             db.words.save(word);
+//         }
+//     });
+// }
 
 function isAlreadyinDB(word) {
     const items = db.words.find({
