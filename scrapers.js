@@ -33,12 +33,15 @@ async function scrapeWordFromEKI(inWord) {
 
         browser.close()
 
-        // console.log('Scraping result: ', {
-        //     word,
-        //     definition,
-        //     example,
-        //     tries: 0
-        // });
+        console.log('Scraping successful'
+            // , {
+            //     word,
+            //     definition,
+            //     example,
+            //     tries: 0
+            // }
+
+        );
 
 
         const wordNew = {

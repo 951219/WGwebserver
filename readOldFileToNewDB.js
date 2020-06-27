@@ -1,7 +1,7 @@
 var fs = require('fs');
 const scrapers = require('./scrapers');
 const db = require('diskdb');
-var words = [];
+// var words = [];
 
 db.connect('./data', ['wordsNew']);
 
@@ -20,19 +20,17 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
             word: sLine[1],
             definition: sLine[2]
         };
-
+        //TODO ID 0,1,2,3,4 system needs to be implemented
         console.log(`loop ${line} - Sent to scraping: ${word.word}`);
 
-        const item = db.wordsNew.findOne({
-            word: word.word
-        })
-
-        if (item === undefined) {
+        if (db.wordsNew.findOne({
+                word: word.word
+            }) === undefined) {
 
             var scrapedWord = await scrapers.scrapeWordFromEKI(word.word);
 
             console.log(scrapedWord);
-            words.push(scrapedWord);
+            // words.push(scrapedWord);
             db.wordsNew.save(scrapedWord);
 
         } else {
@@ -40,6 +38,6 @@ fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
         }
     }
 
-    console.log(words.length);
+    // console.log(words.length);
 
 });

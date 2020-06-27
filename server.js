@@ -1,6 +1,6 @@
 const express = require('express');
 const server = express();
-// const scrapers = require('./scrapers.js')
+const scrapers = require('./scrapers.js')
 const cors = require('cors')
 
 const body_parser = require('body-parser')
@@ -83,8 +83,7 @@ server.get("/safety/:bool", (req, res) => {
     res.json({
         message: changeSafeModeTo(bool),
         safemode: safeModeActivated
-    }
-    )
+    })
 });
 
 
@@ -125,9 +124,10 @@ server.post("/words", (req, res) => {
         db.words.save(item);
 
         res.json(db.words.find());
-    }
-    else {
-        res.json({ message: 'No access' })
+    } else {
+        res.json({
+            message: 'No access'
+        })
     }
 })
 
@@ -145,7 +145,9 @@ server.put("/words/:id", (req, res) => {
             id: itemId
         }));
     } else {
-        res.json({ message: 'No access' })
+        res.json({
+            message: 'No access'
+        })
     }
 });
 
@@ -160,7 +162,9 @@ server.delete("/words/:id", (req, res) => {
 
         res.json(db.words.find());
     } else {
-        res.json({ message: 'No access' })
+        res.json({
+            message: 'No access'
+        })
     }
 });
 
@@ -174,7 +178,9 @@ server.get("/words/exists/:word", (req, res) => {
             res.json(false)
         };
     } else {
-        res.json({ message: 'No access' })
+        res.json({
+            message: 'No access'
+        })
     }
 });
 
@@ -295,8 +301,10 @@ server.get("/words/getbyword/:word", (req, res) => {
     }
 });
 
-server.get("/words/scrapefromeki/:word", (req, res) => {
-    // var word = req.word;
-    // var def = scrapers.scrapeDefinition(word.toString)
-    res.json('broken');
+
+//workds //TODO check if word is available and then return it from the DB instead?
+server.get("/words/scrapefromeki/:word", async (req, res) => {
+    var word = req.params.word;
+    var scrapedWord = await scrapers.scrapeWordFromEKI(word);
+    res.json(scrapedWord);
 })
