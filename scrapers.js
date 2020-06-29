@@ -3,15 +3,13 @@ const puppeteer = require('puppeteer');
 
 //works for words with with multiple definitions and multiple examples
 async function scrapeWordFromEKI(inWord) {
-    var url = 'http://eki.ee/dict/ekss/index.cgi?Q=' + inWord + '&F=M';
+    var url = `http://eki.ee/dict/ekss/index.cgi?Q=${inWord}&F=M`;
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto(url);
 
-
-
-        // gets the found word to prevent typos in the url
+        // gets the found word to prevent typos in the user input
         var word;
         try {
             word = await page.evaluate(() => document.querySelector('.leitud_ss').textContent);
@@ -30,11 +28,11 @@ async function scrapeWordFromEKI(inWord) {
             }
         }
 
-        // checks if the word is a homonym(has multiple meanings) and adds them to array
+        // checks for definitions(s) and adds them to array. 1 should be always present
         const definition = await page.evaluate(() => Array.from(document.querySelectorAll('.d'), e => e.textContent));
 
 
-        // checks if example element is present, if it is then returns value, if not then null
+        // checks if example element is present, if it is then returns value(s), if not then null
         var example;
         try {
             await page.waitForSelector('.n', {
@@ -43,13 +41,13 @@ async function scrapeWordFromEKI(inWord) {
             example = await page.evaluate(() => Array.from(document.querySelectorAll('.n'), e => e.textContent));
         } catch (error) {
             example = null;
-            console.log("The element '.n' didn't appear for " + word);
+            console.log(`The element '.n' didn't appear for ${word}`);
             console.log(error.message);
         }
 
         browser.close()
 
-        console.log('Scraping successful'
+        console.log(`Scraping successful for word ${word} `
             // , {
             //     word,
             //     definition,
@@ -70,7 +68,7 @@ async function scrapeWordFromEKI(inWord) {
         return wordNew;
 
     } catch (error) {
-        console.log(inWord + ' element not found \n' + error)
+        console.log(`${inWord} element not found \n ${error}`)
     }
 }
 

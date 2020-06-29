@@ -8,28 +8,9 @@ server.use(body_parser.json());
 
 const db = require('diskdb');
 db.connect('./data', ['words']);
-// The syntax is: db.connect('/path/to/db-folder', ['collection-name']);
-
-
-var safeModeActivated = true;
-
-// add json route handler
-// server.get("/json", (req, res) => {
-//     res.json({
-//         message: "Hello world"
-//     });
-// });
 server.use(cors());
 
-
-// add html route handler
-server.get("/", (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-// server.get("/info", (req, res) => {
-//     res.sendFile(__dirname + '/info.html');
-// });
+var safeModeActivated = true;
 
 //start server 
 const port = process.env.PORT;
@@ -38,9 +19,14 @@ server.listen(port || 4000, () => {
 });
 
 
-// CRUD / REST / DISKDBga suhtlus
-server.get("/words", (req, res) => {
 
+// add html route handler
+server.get("/", (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+// CRUD / REST / Communicating with diskdb
+server.get("/words", (req, res) => {
     res.json(db.words.find());
 });
 
@@ -51,7 +37,7 @@ server.get("/words/:id", (req, res) => {
     })
 
     if (item != null) {
-        console.log('\nViewing word with an id of ' + reqId + "\nobject: " + JSON.stringify(item));
+        console.log(`\nViewing word with an id of ${reqId} \n object: ${JSON.stringify(item)}`);
         res.json(item);
     } else {
         console.log(`item ${reqId} doesn't exist`);
@@ -117,7 +103,7 @@ server.put("/words/:id", (req, res) => {
     if (!safeModeActivated) {
         const itemId = req.params.id;
         const item = req.body;
-        console.log("Editing words: ", itemId, " to be ", item);
+        console.log(`Editing words: ${itemId} to be ${item}`);
 
         db.words.update({
             index: itemId
@@ -136,7 +122,7 @@ server.put("/words/:id", (req, res) => {
 server.delete("/words/:id", (req, res) => {
     if (!safeModeActivated) {
         const itemId = req.params.id;
-        console.log("Delete word with index: ", itemId);
+        console.log(`Delete word with index: ${itemId}`);
 
         db.words.remove({
             index: itemId
@@ -178,7 +164,7 @@ server.get("/words/random/:number", (req, res) => {
         const item = db.words.findOne({
             index: numb.toString()
         })
-        console.log(`loop ${i} - Adding word with an id of ` + numb);
+        console.log(`loop ${i} - Adding word with an id of ${numb}`);
         if (item !== undefined) {
             if (!arrayIDs.includes(item.index)) {
                 arrayIDs.push(item.index);
@@ -211,7 +197,7 @@ function isAlreadyinDB(word) {
     });
 
     if (items.length) {
-        console.log('\nViewing word from DB: ' + word + "\nobject: " + JSON.stringify(items));
+        console.log(`\nViewing word from DB: ${word} \nobject: ${JSON.stringify(items)}`);
         return true;
     } else {
         console.log(`Word ${word} is not in DB`);
@@ -221,7 +207,7 @@ function isAlreadyinDB(word) {
 }
 
 
-//get word by name
+//get word by name //TODO return a single object instead of an array
 server.get("/words/getbyword/:word", (req, res) => {
     const wordFromUrl = req.params.word;
     const items = db.words.find({
@@ -229,7 +215,7 @@ server.get("/words/getbyword/:word", (req, res) => {
     })
 
     if (items.length) {
-        console.log('\nViewing word: ' + wordFromUrl + "\nobject: " + JSON.stringify(items));
+        console.log(`\nViewing word: ${wordFromUrl} \nobject: ${JSON.stringify(items)}`);
         res.json(items);
     } else {
         console.log(`Word ${wordFromUrl} doesn't exist`);

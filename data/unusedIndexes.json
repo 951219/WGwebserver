@@ -1,1 +1,237 @@
-[{"word":"pinnima","id":22,"_id":"531e3209e940443c9fdd92268b44cc2b"},{"word":"radikaalne","id":48,"_id":"2e5a3bc40e724d3582a2409a28f24bfc"},{"word":"rutiin","id":64,"_id":"9f6dc8f17735404dac643d48e5a67752"},{"word":"etikett","id":81,"_id":"cf346f9bf12a4d4394f589f48b5a493a"},{"word":"bool","id":91,"_id":"30616b05281045a4babec2acd92b99bd"},{"word":"kilk","id":122,"_id":"e9fb91e8bc654cc9b396a657f4fbca98"},{"word":"pragama","id":130,"_id":"d99d0efbc771443f8ff9fdb8fb2377eb"},{"word":"polaarsus","id":131,"_id":"d2d6cdbf14874a12ab7cc317e290c4df"},{"word":"banaalne","id":193,"_id":"990baf48e3144abc8ddf4e3bd788a936"},{"word":"reid","id":196,"_id":"5c863e00a9614f578ff83c6cc7f0ea10"},{"word":"susi","id":205,"_id":"93a7f50b8b2448c294c5fd217035c948"},{"word":"hanguma","id":224,"_id":"866ebff114994649ae74b02b3a0b1067"},{"word":"tung","id":241,"_id":"434295480429476686fc343303562e4b"},{"word":"foon","id":286,"_id":"490b1732739c4b19962f2aea401909c6"},{"word":"marginaal","id":296,"_id":"f6386b08a0664cfdbe4d38795e33e3b7"},{"word":"komandeering","id":298,"_id":"4931afba8bb44a2aa293df92a15fa0ef"},{"word":"psühhedeelne","id":312,"_id":"a4802382749f4b56b425eafbca25b663"},{"word":"tikk","id":340,"_id":"856cde2257be477e91155a88d58bac40"},{"word":"tikk","id":341,"_id":"9c9ef5e141964234b07f441e8db36ef1"},{"word":"tikk","id":342,"_id":"36ae42cef0534aff9c2bf42d0c3a3985"},{"word":"kaater","id":353,"_id":"9ac5b995a9134aa8afab39852ac934e0"},{"word":"kaater","id":354,"_id":"4c8e9f6798564fba98685e3ffb96184a"},{"word":"sond","id":360,"_id":"c01a065739cf425ea096af05522cf1d8"},{"word":"tiraaž","id":362,"_id":"23f8487fd54a4648838aae1135d886d5"},{"word":"proviisor","id":380,"_id":"19005e8ffb344abcbc2956ae001e2685"},{"word":"marginaalne","id":385,"_id":"830e1d4e77db44a78d103ced01f36b83"},{"word":"anagramm","id":388,"_id":"e11682156fad4f8dac0e2109035b40be"},{"word":"devalvatsioon","id":402,"_id":"008da75abe2c4c16a4c4fdfa67898d18"},{"word":"skeene","id":410,"_id":"f46fb03f34044da4ba82336af083f877"},{"word":"morg","id":447,"_id":"95fc6e12988d4d69bf49c3f7ba168430"},{"word":"baar","id":466,"_id":"d4739020256d4aef89ce849ca5499c6d"},{"word":"dekadents","id":496,"_id":"43650b5cadc844e38378c0fff66d068c"},{"word":"deliirium","id":504,"_id":"4889afa3b1ce40149602649d04f3bee2"},{"word":"krüptiline","id":507,"_id":"f7a1b15458054201bd0975c555d5f8d8"},{"word":"etniline","id":510,"_id":"ddc7cecd497c4c0cb30c90ec26aeaf81"},{"word":"klaustrofoobia","id":512,"_id":"9cabcf55af694047b14be97bba21d737"},{"word":"resoneerima","id":528,"_id":"83b9925bcd8b434f8fcbc2132658fd51"},{"word":"krüptiline","id":551,"_id":"5c624f3951204907930b84db8d2d7026"},{"word":"trafaretne","id":556,"_id":"1724b230df494ef2b9bea7eb78e62335"},{"word":"haltuura","id":559,"_id":"2b729bbe81a0468f801c4e64dffc2120"},{"word":"primaat","id":579,"_id":"eebb48acdcd24718bbcbea7f0aeb6f06"},{"word":"anno","id":591,"_id":"37e0cda4f5684e32a336180e3b3d0b0b"},{"word":"imperatiivne","id":592,"_id":"0fa54159b307495d9272b12747b992b6"},{"word":"hüpotees","id":599,"_id":"9278384da7c54c938523e5783c32aa6f"},{"word":"patronaaž","id":614,"_id":"74fb3c07941441c9bb20eee722a83eb2"},{"word":"patroneerima","id":615,"_id":"f7d32469cd96455f82c7dc82db8b2bad"},{"word":"veksel","id":628,"_id":"d9f425e803e44a17a305ab73eb584068"},{"word":"helk","id":643,"_id":"80cc95da20a8448f86f9fb07092d055b"},{"word":"helk","id":644,"_id":"97b34580a98f40af8c95df5bae10cc88"},{"word":"instants","id":653,"_id":"b723d65d7e6d45fa840e994f1750a0cb"},{"word":"žargoon","id":656,"_id":"cf66de70e4a347ef894be3b3ca8c131a"},{"word":"resoneerima","id":658,"_id":"97e22a03658b4cf79f9c63343afd7f1a"},{"word":"resoneerima","id":659,"_id":"6f0d53c98117454d97c647765be7cfe5"},{"word":"retsidivist","id":675,"_id":"85807a4d9dc7490e96a7578532dbaa10"},{"word":"rabatt","id":682,"_id":"670ec5625af94415bf98cd2dff79e9e0"},{"word":"ihne","id":684,"_id":"d5a709f8448b423b9eb7a2dcf3b08cbd"},{"word":"sodiaak","id":686,"_id":"af25ccef8f3542f8840ebd94a758535a"},{"word":"prassima","id":688,"_id":"afb186269d0543f2b7f84cb48a73feba"},{"word":"labrakas","id":690,"_id":"3aa1d9cf92454573ab44e59f3b7f10c1"}]
+[{
+    "word": "pinnima",
+    "id": 22,
+    "_id": "531e3209e940443c9fdd92268b44cc2b"
+}, {
+    "word": "radikaalne",
+    "id": 48,
+    "_id": "2e5a3bc40e724d3582a2409a28f24bfc"
+}, {
+    "word": "rutiin",
+    "id": 64,
+    "_id": "9f6dc8f17735404dac643d48e5a67752"
+}, {
+    "word": "etikett",
+    "id": 81,
+    "_id": "cf346f9bf12a4d4394f589f48b5a493a"
+}, {
+    "word": "bool",
+    "id": 91,
+    "_id": "30616b05281045a4babec2acd92b99bd"
+}, {
+    "word": "kilk",
+    "id": 122,
+    "_id": "e9fb91e8bc654cc9b396a657f4fbca98"
+}, {
+    "word": "pragama",
+    "id": 130,
+    "_id": "d99d0efbc771443f8ff9fdb8fb2377eb"
+}, {
+    "word": "polaarsus",
+    "id": 131,
+    "_id": "d2d6cdbf14874a12ab7cc317e290c4df"
+}, {
+    "word": "banaalne",
+    "id": 193,
+    "_id": "990baf48e3144abc8ddf4e3bd788a936"
+}, {
+    "word": "reid",
+    "id": 196,
+    "_id": "5c863e00a9614f578ff83c6cc7f0ea10"
+}, {
+    "word": "susi",
+    "id": 205,
+    "_id": "93a7f50b8b2448c294c5fd217035c948"
+}, {
+    "word": "hanguma",
+    "id": 224,
+    "_id": "866ebff114994649ae74b02b3a0b1067"
+}, {
+    "word": "tung",
+    "id": 241,
+    "_id": "434295480429476686fc343303562e4b"
+}, {
+    "word": "foon",
+    "id": 286,
+    "_id": "490b1732739c4b19962f2aea401909c6"
+}, {
+    "word": "marginaal",
+    "id": 296,
+    "_id": "f6386b08a0664cfdbe4d38795e33e3b7"
+}, {
+    "word": "komandeering",
+    "id": 298,
+    "_id": "4931afba8bb44a2aa293df92a15fa0ef"
+}, {
+    "word": "psühhedeelne",
+    "id": 312,
+    "_id": "a4802382749f4b56b425eafbca25b663"
+}, {
+    "word": "tikk",
+    "id": 340,
+    "_id": "856cde2257be477e91155a88d58bac40"
+}, {
+    "word": "tikk",
+    "id": 341,
+    "_id": "9c9ef5e141964234b07f441e8db36ef1"
+}, {
+    "word": "tikk",
+    "id": 342,
+    "_id": "36ae42cef0534aff9c2bf42d0c3a3985"
+}, {
+    "word": "kaater",
+    "id": 353,
+    "_id": "9ac5b995a9134aa8afab39852ac934e0"
+}, {
+    "word": "kaater",
+    "id": 354,
+    "_id": "4c8e9f6798564fba98685e3ffb96184a"
+}, {
+    "word": "sond",
+    "id": 360,
+    "_id": "c01a065739cf425ea096af05522cf1d8"
+}, {
+    "word": "tiraaž",
+    "id": 362,
+    "_id": "23f8487fd54a4648838aae1135d886d5"
+}, {
+    "word": "proviisor",
+    "id": 380,
+    "_id": "19005e8ffb344abcbc2956ae001e2685"
+}, {
+    "word": "marginaalne",
+    "id": 385,
+    "_id": "830e1d4e77db44a78d103ced01f36b83"
+}, {
+    "word": "anagramm",
+    "id": 388,
+    "_id": "e11682156fad4f8dac0e2109035b40be"
+}, {
+    "word": "devalvatsioon",
+    "id": 402,
+    "_id": "008da75abe2c4c16a4c4fdfa67898d18"
+}, {
+    "word": "skeene",
+    "id": 410,
+    "_id": "f46fb03f34044da4ba82336af083f877"
+}, {
+    "word": "morg",
+    "id": 447,
+    "_id": "95fc6e12988d4d69bf49c3f7ba168430"
+}, {
+    "word": "baar",
+    "id": 466,
+    "_id": "d4739020256d4aef89ce849ca5499c6d"
+}, {
+    "word": "dekadents",
+    "id": 496,
+    "_id": "43650b5cadc844e38378c0fff66d068c"
+}, {
+    "word": "deliirium",
+    "id": 504,
+    "_id": "4889afa3b1ce40149602649d04f3bee2"
+}, {
+    "word": "krüptiline",
+    "id": 507,
+    "_id": "f7a1b15458054201bd0975c555d5f8d8"
+}, {
+    "word": "etniline",
+    "id": 510,
+    "_id": "ddc7cecd497c4c0cb30c90ec26aeaf81"
+}, {
+    "word": "klaustrofoobia",
+    "id": 512,
+    "_id": "9cabcf55af694047b14be97bba21d737"
+}, {
+    "word": "resoneerima",
+    "id": 528,
+    "_id": "83b9925bcd8b434f8fcbc2132658fd51"
+}, {
+    "word": "krüptiline",
+    "id": 551,
+    "_id": "5c624f3951204907930b84db8d2d7026"
+}, {
+    "word": "trafaretne",
+    "id": 556,
+    "_id": "1724b230df494ef2b9bea7eb78e62335"
+}, {
+    "word": "haltuura",
+    "id": 559,
+    "_id": "2b729bbe81a0468f801c4e64dffc2120"
+}, {
+    "word": "primaat",
+    "id": 579,
+    "_id": "eebb48acdcd24718bbcbea7f0aeb6f06"
+}, {
+    "word": "anno",
+    "id": 591,
+    "_id": "37e0cda4f5684e32a336180e3b3d0b0b"
+}, {
+    "word": "imperatiivne",
+    "id": 592,
+    "_id": "0fa54159b307495d9272b12747b992b6"
+}, {
+    "word": "hüpotees",
+    "id": 599,
+    "_id": "9278384da7c54c938523e5783c32aa6f"
+}, {
+    "word": "patronaaž",
+    "id": 614,
+    "_id": "74fb3c07941441c9bb20eee722a83eb2"
+}, {
+    "word": "patroneerima",
+    "id": 615,
+    "_id": "f7d32469cd96455f82c7dc82db8b2bad"
+}, {
+    "word": "veksel",
+    "id": 628,
+    "_id": "d9f425e803e44a17a305ab73eb584068"
+}, {
+    "word": "helk",
+    "id": 643,
+    "_id": "80cc95da20a8448f86f9fb07092d055b"
+}, {
+    "word": "helk",
+    "id": 644,
+    "_id": "97b34580a98f40af8c95df5bae10cc88"
+}, {
+    "word": "instants",
+    "id": 653,
+    "_id": "b723d65d7e6d45fa840e994f1750a0cb"
+}, {
+    "word": "žargoon",
+    "id": 656,
+    "_id": "cf66de70e4a347ef894be3b3ca8c131a"
+}, {
+    "word": "resoneerima",
+    "id": 658,
+    "_id": "97e22a03658b4cf79f9c63343afd7f1a"
+}, {
+    "word": "resoneerima",
+    "id": 659,
+    "_id": "6f0d53c98117454d97c647765be7cfe5"
+}, {
+    "word": "retsidivist",
+    "id": 675,
+    "_id": "85807a4d9dc7490e96a7578532dbaa10"
+}, {
+    "word": "rabatt",
+    "id": 682,
+    "_id": "670ec5625af94415bf98cd2dff79e9e0"
+}, {
+    "word": "ihne",
+    "id": 684,
+    "_id": "d5a709f8448b423b9eb7a2dcf3b08cbd"
+}, {
+    "word": "sodiaak",
+    "id": 686,
+    "_id": "af25ccef8f3542f8840ebd94a758535a"
+}, {
+    "word": "prassima",
+    "id": 688,
+    "_id": "afb186269d0543f2b7f84cb48a73feba"
+}, {
+    "word": "labrakas",
+    "id": 690,
+    "_id": "3aa1d9cf92454573ab44e59f3b7f10c1"
+}]
