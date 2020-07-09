@@ -159,7 +159,8 @@ server.get("/words/random/:number", (req, res) => {
 
     for (var i = 0; i < randNumber; i++) {
 
-        const numb = getRandomInt(db.words.find().length);
+        const numb = Math.floor(
+            Math.random() * (db.words.find().length + 1));
 
         const item = db.words.findOne({
             index: numb.toString()
@@ -180,16 +181,9 @@ server.get("/words/random/:number", (req, res) => {
             i--;
         }
     }
-    res.json(randItems);
+    res.json(
+        randItems);
 });
-
-
-function getRandomInt(max) {
-    return Math.floor(
-        Math.random() * (max + 1)
-    )
-}
-
 
 function isAlreadyinDB(word) {
     const items = db.words.find({
@@ -207,16 +201,15 @@ function isAlreadyinDB(word) {
 }
 
 
-//get word by name //TODO return a single object instead of an array
 server.get("/words/getbyword/:word", (req, res) => {
     const wordFromUrl = req.params.word;
-    const items = db.words.find({
+    const item = db.words.findOne({
         word: wordFromUrl
     })
 
-    if (items.length) {
-        console.log(`\nViewing word: ${wordFromUrl} \nobject: ${JSON.stringify(items)}`);
-        res.json(items);
+    if (item != null) {
+        console.log(`\nViewing word: ${wordFromUrl} \nobject: ${JSON.stringify(item)}`);
+        res.json(item);
     } else {
         console.log(`Word ${wordFromUrl} doesn't exist`);
 
@@ -228,6 +221,9 @@ server.get("/words/getbyword/:word", (req, res) => {
 
 
 //TODO get from oxford dict 
+
+
+
 
 //workds //TODO check if word is available and then return it from the DB instead?
 server.get("/words/scrapefromeki/:word", async (req, res) => {
