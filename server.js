@@ -13,18 +13,16 @@ server.use(cors());
 var safeModeActivated = true;
 
 //start server 
-
-//old
-// const port = process.env.PORT;
-// server.listen(port || 4000, () => {
-//     console.log(`Server listening at ${port} or at 4000`);
-// });
-
-
-//new
-server.listen(4000, 'localhost', () => {
-    console.log(`Server listening at 4000`);
+const port = process.env.PORT;
+server.listen(port || 4000, () => {
+    console.log(`Server listening at ${port} or at 4000`);
 });
+
+
+//new not working
+// server.listen(4000, 'localhost', () => {
+//     console.log(`Server listening at 4000`);
+// });
 
 
 
