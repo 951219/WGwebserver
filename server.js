@@ -13,9 +13,17 @@ server.use(cors());
 var safeModeActivated = true;
 
 //start server 
-const port = process.env.PORT;
-server.listen(port || 4000, () => {
-    console.log(`Server listening at ${port} or at 4000`);
+
+//old
+// const port = process.env.PORT;
+// server.listen(port || 4000, () => {
+//     console.log(`Server listening at ${port} or at 4000`);
+// });
+
+
+//new
+server.listen(4000, 'localhost', () => {
+    console.log(`Server listening at 4000`);
 });
 
 
@@ -222,9 +230,7 @@ server.get("/words/getbyword/:word", (req, res) => {
 
 //TODO get from oxford dict 
 
-
-
-
+1
 //workds //TODO check if word is available and then return it from the DB instead?
 server.get("/words/scrapefromeki/:word", async (req, res) => {
     var word = req.params.word;
