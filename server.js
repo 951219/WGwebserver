@@ -1,17 +1,17 @@
 const express = require('express');
 const server = express();
 const scrapers = require('./scrapers.js')
+const morgan = require('morgan')
 const cors = require('cors')
-
 const body_parser = require('body-parser')
-server.use(body_parser.json());
-
 const db = require('diskdb');
-db.connect('./data', ['words']);
 
-//server.use(morgan???)
+
+server.use(body_parser.json());
+server.use(morgan('tiny'));
 server.use(cors());
 
+db.connect('./data', ['words']);
 var safeModeActivated = true;
 
 //start server 
