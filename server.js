@@ -8,14 +8,16 @@ server.use(body_parser.json());
 
 const db = require('diskdb');
 db.connect('./data', ['words']);
+
+//server.use(morgan???)
 server.use(cors());
 
 var safeModeActivated = true;
 
 //start server 
-const port = process.env.PORT;
-server.listen(port || 4000, () => {
-    console.log(`Server listening at ${port} or at 4000`);
+const port = process.env.PORT || 4000;
+server.listen(port, () => {
+    console.log(`Server listening at ${port}`);
 });
 
 
