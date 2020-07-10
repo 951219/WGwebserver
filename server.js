@@ -221,6 +221,7 @@ server.get("/words/getbyword/:word", (req, res) => {
 
 server.get("/words/scrapefromeki/:word", async (req, res) => {
     // TODO: ATM pulling from DB twice, needs refactoring so maybe it would redirect the client to endpoint that pulls from db
+    // TODO: works locally, not in heroku
 
     var word = req.params.word;
 
