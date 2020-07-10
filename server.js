@@ -1,9 +1,9 @@
 const express = require('express');
 const server = express();
-const scrapers = require('./scrapers.js')
-const morgan = require('morgan')
-const cors = require('cors')
-const body_parser = require('body-parser')
+const scrapers = require('./scrapers.js');
+const morgan = require('morgan');
+const cors = require('cors');
+const body_parser = require('body-parser');
 const db = require('diskdb');
 
 
@@ -219,13 +219,42 @@ server.get("/words/getbyword/:word", (req, res) => {
     }
 });
 
-
-//TODO get from oxford dict 
-
-1
-//workds //TODO check if word is available and then return it from the DB instead?
 server.get("/words/scrapefromeki/:word", async (req, res) => {
+    // TODO: ATM pulling from DB twice, needs refactoring so maybe it would redirect the client to endpoint that pulls from db
+
     var word = req.params.word;
-    var scrapedWord = await scrapers.scrapeWordFromEKI(word);
-    res.json(scrapedWord);
-})
+
+    if (isAlreadyinDB(word)) {
+        var wordFromDB = db.words.find({
+            word: word
+        });
+
+        res.json({
+            message: 'from DB',
+            wordFromDB
+        })
+    } else {
+
+        var scrapedWord = await scrapers.scrapeWordFromEKI(word);
+        res.json({
+            message: 'from EKI',
+            scrapedWord
+        });
+    }
+});
+
+/* TODO: if (word not in db) {
+    if (we have a free index to use){
+        add to DB
+    } else {
+        add normally
+    }
+}*/
+
+// TODO: If the answer from the client was correct/false / modify DB accordingly
+
+// TODO: Are indexes necessary? 
+
+// TODO: refactor security to check from the url instead, if the user is admin or not / add a basic auth
+
+// TODO: get from oxford dict 
