@@ -20,14 +20,6 @@ server.listen(port, () => {
     console.log(`Server listening at ${port}`);
 });
 
-
-//new not working
-// server.listen(4000, 'localhost', () => {
-//     console.log(`Server listening at 4000`);
-// });
-
-
-
 // add html route handler
 server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
