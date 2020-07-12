@@ -6,7 +6,7 @@ db.connect('./data', ['words']);
 db.connect('./data', ['unusedIndexes']);
 db.connect('./data', ['lookInto']);
 
-fs.readFile('wordsOld.txt', 'utf8', async function (error, data) {
+fs.readFile('./data/rawtext/wordsOld.txt', 'utf8', async function (error, data) {
 
     var lines = data.split('\n');
 

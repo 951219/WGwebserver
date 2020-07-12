@@ -221,7 +221,7 @@ server.get("/words/getbyword/:word", (req, res) => {
 
 server.get("/words/scrapefromeki/:word", async (req, res) => {
     // TODO: ATM pulling from DB twice, needs refactoring so maybe it would redirect the client to endpoint that pulls from db
-    // TODO: works locally, not in heroku
+    // TODO: scraping works locally, not in heroku
 
     var word = req.params.word;
 
@@ -256,6 +256,8 @@ server.get("/words/scrapefromeki/:word", async (req, res) => {
 
 // TODO: Are indexes necessary? 
 
-// TODO: refactor security to check from the url instead, if the user is admin or not / add a basic auth
+// TODO: refactor basic security to check from the url instead, if the user is admin or not / add a basic auth
 
 // TODO: get from oxford dict 
+
+// TODO> integrate a real DB - mongo for example
