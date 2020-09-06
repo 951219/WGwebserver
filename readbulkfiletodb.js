@@ -1,10 +1,10 @@
 var fs = require('fs');
-// const scrapers = require('./scrapers');
+const scrapers = require('./scrapers');
 const db = require('diskdb');
 
 db.connect('./data', ['words']);
-// db.connect('./data', ['unusedIndexes']);
-// db.connect('./data', ['lookInto']);
+db.connect('./data', ['unusedIndexes']);
+db.connect('./data', ['lookInto']);
 
 fs.readFile('./data/rawtext/estwordsinbulk.txt', 'utf8', async function (error, data) {
 
@@ -14,70 +14,78 @@ fs.readFile('./data/rawtext/estwordsinbulk.txt', 'utf8', async function (error, 
 
         const word = lines[line];
 
-        // console.log(`working with word: ${word}`);
-
-
+        console.log(`working with word: ${word}`);
 
         //checks for duplicates
         if (db.words.findOne({
-                word: word.word
+            word: word.word
+        }) === undefined) {
+            console.log(`New word: ${word} - not in db`);
+
+            var scrapedWord = await scrapers.scrapeWordFromEKI(word);
+
+
+            // checks if there is a duplicate with corrected word from EKI
+            if (db.words.findOne({
+                word: scrapedWord.word
             }) === undefined) {
-            console.log(`new word  ${word}- not in db`);
 
-            //     var scrapedWord = await scrapers.scrapeWordFromEKI(word.word);
+                //checks for other anomalies
+                if (scrapedWord.word != null) {
 
-            //     if (db.words.findOne({
-            //             word: scrapedWord.word
-            //         }) === undefined) {
+                    scrapedWord["index"] = line.toString();
 
-            //         //checks for other anomalies
-            //         if (scrapedWord.word != null) {
+                    // console.log(scrapedWord);
+                    db.words.save(scrapedWord);
 
-            //             scrapedWord["index"] = line.toString();
+                } else {
+                    //TODO broken - indexing needs refactoring
+                    //if something is broken
+                    console.log(`Something is broken: ${word.word} added to lookInto.json`);
 
-            //             console.log(scrapedWord);
-            //             db.words.save(scrapedWord);
+                    // checks if the index is already saved
+                    // if (db.unusedIndexes.findOne({
+                    //     id: line
+                    // })) {
+                    //     db.unusedIndexes.save({
+                    //         word: word.word,
+                    //         id: line
 
-            //         } else {
-            //             //if something is broken
-            //             db.unusedIndexes.save({
-            //                 word: word.word,
-            //                 id: line
+                    //     })
+                    //     console.log(`index ${line} added to unusedIndexes.json`);
+                    // }
 
-            //             })
+                    db.lookInto.save({
+                        word: word.word,
+                        ekiWord: scrapedWord.word,
+                        id: line
+                    })
 
-            //             db.lookInto.save({
-            //                 word: word.word,
-            //                 ekiWord: scrapedWord.word,
-            //                 id: line
-            //             })
 
-            //             console.log(`Something is broken: ${word.word} added to lookInto.json, index ${line} added to unusedIndexes.json`);
 
-            //         }
-            //     } else {
-            //         // if duplicate found according to the EKI response
+                }
+            } else {
+                // if duplicate found according to the EKI response
+                db.lookInto.save({
+                    word: word.word,
+                    ekiWord: scrapedWord.word,
+                    id: line
+                })
+                // db.unusedIndexes.save({
+                //     word: word.word,
+                //     id: line
+                // })
+                console.log(`Duplicate word found, when it got corrected by EKI response: ${word} vs ${scrapedWord.word}, ${line} id added to id DB`);
 
-            //         db.lookInto.save({
-            //             word: word.word,
-            //             ekiWord: scrapedWord.word,
-            //             id: line
-            //         })
-            //         db.unusedIndexes.save({
-            //             word: word.word,
-            //             id: line
-            //         })
-            //         console.log(`Duplicate word found, when it got corrected by EKI response: ${word.word} vs ${scrapedWord.word}, ${line} id added to id DB`);
-
-            //     }
+            }
 
         } else {
             // if duplicate found
-            // db.unusedIndexes.save({
-            //     word: word.word,
-            //     id: line
-            // })
-            console.log(`Duplicate word: ${word}`);
+            db.unusedIndexes.save({
+                word: word.word,
+                id: line
+            })
+            console.log(`Duplicate word found: ${word}`);
         }
     }
 });

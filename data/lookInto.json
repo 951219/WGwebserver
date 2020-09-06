@@ -1,1 +1,422 @@
-[]
+[
+    {
+        "ekiWord": "moratoorium",
+        "id": 0,
+        "_id": "564f63f8d05f431b95b7d8e66ca67b5a"
+    },
+    {
+        "ekiWord": "pürofoobia",
+        "id": 20,
+        "_id": "2729cad3455c474190a69c850f2318a6"
+    },
+    {
+        "ekiWord": "resoneerima",
+        "id": 21,
+        "_id": "5811140f6b0247bd84a1bfda24257082"
+    },
+    {
+        "ekiWord": "hermeetiline",
+        "id": 26,
+        "_id": "e78a13681cbc4f5583de15dfd68285fa"
+    },
+    {
+        "ekiWord": "viadukt",
+        "id": 38,
+        "_id": "25e135fb1f29437594a9a7030e4163e6"
+    },
+    {
+        "ekiWord": "numismaatika",
+        "id": 39,
+        "_id": "d83738d2a1f445b0bb6eaca78a3eefee"
+    },
+    {
+        "ekiWord": "simman",
+        "id": 47,
+        "_id": "51148ca92e984b81af366aacd3eec8bb"
+    },
+    {
+        "ekiWord": "dinee",
+        "id": 49,
+        "_id": "288f3a5183f4451c9c23cffe7e54b550"
+    },
+    {
+        "ekiWord": "permutatsioon",
+        "id": 54,
+        "_id": "6005a436b75b4db5a0b7cb4d4ffbbc4f"
+    },
+    {
+        "ekiWord": "pentsik",
+        "id": 60,
+        "_id": "551f11804a874abfaee142467b9f5d64"
+    },
+    {
+        "ekiWord": "ekspluateerima",
+        "id": 65,
+        "_id": "5ed6db7c56e44ac3b185a8a37178df8e"
+    },
+    {
+        "ekiWord": "diskreetne",
+        "id": 67,
+        "_id": "858bb1ee964e4db0adb267fdb72a5a08"
+    },
+    {
+        "ekiWord": "moratoorium",
+        "id": 0,
+        "_id": "18497e434e9245ef84313e73b55d5974"
+    },
+    {
+        "ekiWord": "mansett",
+        "id": 1,
+        "_id": "5e500e405aa44fdea6c7f4368646db87"
+    },
+    {
+        "ekiWord": "krupjee",
+        "id": 2,
+        "_id": "fb54935b85884df59609bd95b030dce8"
+    },
+    {
+        "ekiWord": "fopaa",
+        "id": 3,
+        "_id": "bcaa247b014e473dbf6a58ba28cf159e"
+    },
+    {
+        "ekiWord": "moratoorium",
+        "id": 0,
+        "_id": "0695f348795b479980023244d6ca39bd"
+    },
+    {
+        "ekiWord": "mansett",
+        "id": 1,
+        "_id": "42fa4e87505943629d3077ac92a18c5b"
+    },
+    {
+        "ekiWord": "krupjee",
+        "id": 2,
+        "_id": "591ecd871cbf4967a89654ad5a69e03d"
+    },
+    {
+        "ekiWord": "fopaa",
+        "id": 3,
+        "_id": "11a32e7bbdd44cda999b3ef7574091f2"
+    },
+    {
+        "ekiWord": "rähm",
+        "id": 4,
+        "_id": "cc53305e484c4c42b65f209d3b630411"
+    },
+    {
+        "ekiWord": "lodža",
+        "id": 5,
+        "_id": "7dc5b12b2db144668aebdffc46a4a2f1"
+    },
+    {
+        "ekiWord": "kronksus",
+        "id": 6,
+        "_id": "97817a729bfb4962afed95d675655806"
+    },
+    {
+        "ekiWord": "sekser",
+        "id": 7,
+        "_id": "67e67f513bae4c1c88ca300faa12c02b"
+    },
+    {
+        "ekiWord": "liturgia",
+        "id": 8,
+        "_id": "a651e6a04318417ea400cd1ea3ef7dc3"
+    },
+    {
+        "ekiWord": "liturgiline",
+        "id": 9,
+        "_id": "54ae5d158b77453a99ea203ffd6f39a6"
+    },
+    {
+        "ekiWord": "fuksia",
+        "id": 10,
+        "_id": "4310cc78196c4c05ab5ac93e2324d6f7"
+    },
+    {
+        "ekiWord": "filigraan",
+        "id": 11,
+        "_id": "63fb59fa94ab4cd49dbdc89243af8844"
+    },
+    {
+        "ekiWord": "šenill",
+        "id": 12,
+        "_id": "68815a477d554f37941e7401c0f8dd84"
+    },
+    {
+        "ekiWord": "seniit",
+        "id": 13,
+        "_id": "38fe34c67ad1416eac0f6aff6dd06f09"
+    },
+    {
+        "ekiWord": "batik",
+        "id": 14,
+        "_id": "ed8dbad0ce2c419d94c2c82ec592346d"
+    },
+    {
+        "ekiWord": "tesaurus",
+        "id": 15,
+        "_id": "231868a507a649dc8abff40b899f2c69"
+    },
+    {
+        "ekiWord": "ametüst",
+        "id": 16,
+        "_id": "29a78e6fb5f04963b43999d201356dc7"
+    },
+    {
+        "ekiWord": "taht",
+        "id": 17,
+        "_id": "6c43274cdfc44c6a828123dc823fa426"
+    },
+    {
+        "ekiWord": "areaal",
+        "id": 18,
+        "_id": "4bd8488132fd44bf9d9ee1d80be2b0d2"
+    },
+    {
+        "ekiWord": "pürofoobia",
+        "id": 19,
+        "_id": "d9fa6f2c6eea483790d55b3c4b09bf3a"
+    },
+    {
+        "ekiWord": "pürofoobia",
+        "id": 20,
+        "_id": "ad3c135fe096439fa4ef47876c052775"
+    },
+    {
+        "ekiWord": "resoneerima",
+        "id": 21,
+        "_id": "00b9eb4df60f4dd196d88cf9604f54cc"
+    },
+    {
+        "ekiWord": "sepsis",
+        "id": 22,
+        "_id": "3894ae9810a5401aa9ed32fcedebbe1e"
+    },
+    {
+        "ekiWord": "dipsomaania",
+        "id": 23,
+        "_id": "3c1ff39756cc479db450ceca46b864a0"
+    },
+    {
+        "ekiWord": "suaree",
+        "id": 24,
+        "_id": "8f410ae644e5400699478927b757bf8b"
+    },
+    {
+        "ekiWord": "dinee",
+        "id": 25,
+        "_id": "85d15f6b553d4755bf62707b1f55705c"
+    },
+    {
+        "ekiWord": "hermeetiline",
+        "id": 26,
+        "_id": "aa769852b4fe45ecb42d8d939561ba83"
+    },
+    {
+        "ekiWord": "autoklaav",
+        "id": 27,
+        "_id": "b11c2de1b39e4f4abb8bfefb1fc021d7"
+    },
+    {
+        "ekiWord": "autokraat",
+        "id": 28,
+        "_id": "bc5a6349fa2340c0b1e71645aca16fb1"
+    },
+    {
+        "ekiWord": "autodidakt",
+        "id": 29,
+        "_id": "e657a4c2ea8d4634820d331b74d91046"
+    },
+    {
+        "ekiWord": "postuumne",
+        "id": 30,
+        "_id": "58510b74ef3c47c5bef280acc3249fb3"
+    },
+    {
+        "ekiWord": "kupee",
+        "id": 31,
+        "_id": "316902aea82f466ebf6dfe7e1ebcd3d7"
+    },
+    {
+        "ekiWord": "ekipaaž",
+        "id": 32,
+        "_id": "f284a3c010cc45a8bfa2ba55ad0fea7b"
+    },
+    {
+        "ekiWord": "fennofiil",
+        "id": 33,
+        "_id": "e0028fa69ce74b3da6bb2cbb420df615"
+    },
+    {
+        "ekiWord": "pastoraal",
+        "id": 34,
+        "_id": "bbdd549fed884d36a86c488541d6ef4a"
+    },
+    {
+        "ekiWord": "bangalo",
+        "id": 35,
+        "_id": "e92f8a67070f426a90b61bec83b8e582"
+    },
+    {
+        "ekiWord": "kubu",
+        "id": 36,
+        "_id": "e80e43c1c88a48ca83f4b213c022a18e"
+    },
+    {
+        "ekiWord": "nihilism",
+        "id": 37,
+        "_id": "26ac982c13ad4a05a9e8b628ed0c68fe"
+    },
+    {
+        "ekiWord": "viadukt",
+        "id": 38,
+        "_id": "aa53f3663e1d4ff898bddaf45972473f"
+    },
+    {
+        "ekiWord": "numismaatika",
+        "id": 39,
+        "_id": "50b8f241c9b44aa690c1f7ebe115952f"
+    },
+    {
+        "ekiWord": "altruistlik",
+        "id": 40,
+        "_id": "08a19344565d49d4be883935ebe06d55"
+    },
+    {
+        "ekiWord": "prokuratuur",
+        "id": 41,
+        "_id": "b8194419080b4755be843fc1a8ed2efb"
+    },
+    {
+        "ekiWord": "suspensioon",
+        "id": 42,
+        "_id": "14b91522d5e64a76ae9621530c7124f5"
+    },
+    {
+        "ekiWord": "ekstaatiline",
+        "id": 43,
+        "_id": "0184f018f80f45c39a9af1da6ebf3ff2"
+    },
+    {
+        "ekiWord": "buliimia",
+        "id": 44,
+        "_id": "1d06564638234885aff03a8862040c27"
+    },
+    {
+        "ekiWord": "klistiir",
+        "id": 45,
+        "_id": "330ab5a5c274471bb4256cf38d5fe011"
+    },
+    {
+        "ekiWord": "kateeter",
+        "id": 46,
+        "_id": "e5bace8448914b548f1e26e12765f188"
+    },
+    {
+        "ekiWord": "simman",
+        "id": 47,
+        "_id": "885df62e218141709b6c124511a3350a"
+    },
+    {
+        "ekiWord": "reveranss",
+        "id": 48,
+        "_id": "01cc4a55e3db45dca136305c0c60e94e"
+    },
+    {
+        "ekiWord": "dinee",
+        "id": 49,
+        "_id": "3c0925bbcec346c49d3b56eb864dc599"
+    },
+    {
+        "ekiWord": "intonatsioon",
+        "id": 50,
+        "_id": "ca361e62fcfb4b748a31e62324bcd960"
+    },
+    {
+        "ekiWord": "nonparell",
+        "id": 51,
+        "_id": "78dadcb81a324a24babf1d402af7d191"
+    },
+    {
+        "ekiWord": "koera|koonlane",
+        "id": 52,
+        "_id": "71f009df35254367a37be388e107a7d6"
+    },
+    {
+        "ekiWord": "peni|nukk",
+        "id": 53,
+        "_id": "77974b95a09c49758692b68387be25fe"
+    },
+    {
+        "ekiWord": "permutatsioon",
+        "id": 54,
+        "_id": "68b7ebd389bf4f9bab983d1341f2182e"
+    },
+    {
+        "ekiWord": "masohhism",
+        "id": 55,
+        "_id": "b9f33003180c41b9a9be926fa580e39a"
+    },
+    {
+        "ekiWord": "altruism",
+        "id": 56,
+        "_id": "26546219f4ad411b8808f44a578033c3"
+    },
+    {
+        "ekiWord": "konsul",
+        "id": 57,
+        "_id": "adfe20ab86d849fa813fd3f27f316d18"
+    },
+    {
+        "ekiWord": "pianiino",
+        "id": 58,
+        "_id": "03438a541ecc4053a2ac4eb64508e614"
+    },
+    {
+        "ekiWord": "sifoon",
+        "id": 59,
+        "_id": "4605e03a10d24445b356534e4fa098e5"
+    },
+    {
+        "ekiWord": "pentsik",
+        "id": 60,
+        "_id": "321e91dfd9534c698e502bcb45747f24"
+    },
+    {
+        "ekiWord": "ilmalik",
+        "id": 61,
+        "_id": "101bc784182a4483a0cd2d6048dd5c35"
+    },
+    {
+        "ekiWord": "koššer",
+        "id": 62,
+        "_id": "516bc43f614743ffbf4031ac518faf0b"
+    },
+    {
+        "ekiWord": "ageerima",
+        "id": 63,
+        "_id": "253044b2e178471190f60aee2f61c07e"
+    },
+    {
+        "ekiWord": "stiihiline",
+        "id": 64,
+        "_id": "c86ebcddc8c44ac58a8efaf5c9a46ef4"
+    },
+    {
+        "ekiWord": "ekspluateerima",
+        "id": 65,
+        "_id": "2ba7db02e2024ebabf2f505243dcc026"
+    },
+    {
+        "ekiWord": "proletariaat",
+        "id": 66,
+        "_id": "fdaf5d92f7664ae0a5e44d91d7612ad3"
+    },
+    {
+        "ekiWord": "diskreetne",
+        "id": 67,
+        "_id": "9c461e0add3e49478bb5186e08fae2cf"
+    }
+]

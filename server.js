@@ -16,9 +16,10 @@ var safeModeActivated = true;
 
 //start server 
 const port = process.env.PORT || 4000;
+
 server.listen(port, () => {
-    console.log(`Server listening at ${port}`);
-});
+    console.log(`Server listening at http://localhost:${port}`)
+})
 
 // add html route handler
 server.get("/", (req, res) => {
@@ -258,6 +259,6 @@ server.get("/words/scrapefromeki/:word", async (req, res) => {
 
 // TODO: refactor basic security to check from the url instead, if the user is admin or not / add a basic auth
 
-// TODO: get from oxford dict 
+// TODO: get from oxford/wordnik dict 
 
-// TODO> integrate a real DB - mongo for example
+// TODO: integrate a real DB - mongo for example
