@@ -7,13 +7,14 @@ const body_parser = require('body-parser');
 const db = require('diskdb');
 const mongoose = require('mongoose');
 const mongoWord = require('./routes/mongoWord');
+const englishRoutes = require('./routes/englishRoutes');
 require('dotenv/config');
 
 //APP.use() is a middle ware
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
-// uses get routes from gets.js
+server.use('/eng',englishRoutes)
 server.use('/mongoword',mongoWord);
 
 mongoose.connect(process.env.DB_CONNECTION,{ useUnifiedTopology: true , useNewUrlParser: true },()=>{
@@ -267,8 +268,6 @@ server.get("/words/scrapefromeki/:word", async (req, res) => {
 // TODO: Are indexes necessary? 
 
 // TODO: refactor basic security to check from the url instead, if the user is admin or not / add a basic auth
-
-// TODO: get from oxford/wordnik dict 
 
 // TODO: integrate a real DB - mongo for example
 
