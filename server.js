@@ -5,11 +5,20 @@ const morgan = require('morgan');
 const cors = require('cors');
 const body_parser = require('body-parser');
 const db = require('diskdb');
+const mongoose = require('mongoose');
+const mongoWord = require('./routes/mongoWord');
+require('dotenv/config');
 
-
+//APP.use() is a middle ware
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
+// uses get routes from gets.js
+server.use('/mongoword',mongoWord);
+
+mongoose.connect(process.env.DB_CONNECTION,{ useUnifiedTopology: true , useNewUrlParser: true },()=>{
+    console.log('Connected to DB!');
+});
 
 db.connect('./data', ['words']);
 var safeModeActivated = true;
@@ -262,3 +271,6 @@ server.get("/words/scrapefromeki/:word", async (req, res) => {
 // TODO: get from oxford/wordnik dict 
 
 // TODO: integrate a real DB - mongo for example
+
+
+
