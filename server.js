@@ -1,34 +1,38 @@
+require('dotenv/config');
 const express = require('express');
-const server = express();
 const scrapers = require('./scrapers.js');
 const morgan = require('morgan');
 const cors = require('cors');
 const body_parser = require('body-parser');
 const db = require('diskdb');
 const mongoose = require('mongoose');
-const mongoWord = require('./routes/mongoWord');
-const englishRoutes = require('./routes/englishRoutes');
-require('dotenv/config');
+// const mongoWord = require('./routes/mongoWord');
+const engRoutes = require('./routes/eng');
+
+
+const server = express();
 
 //APP.use() is a middle ware
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
-server.use('/eng',englishRoutes)
-server.use('/mongoword',mongoWord);
+server.use('/eng',engRoutes)
+// server.use('/mongoword',mongoWord);
 
-mongoose.connect(process.env.DB_CONNECTION,{ useUnifiedTopology: true , useNewUrlParser: true },()=>{
-    console.log('Connected to DB!');
-});
+
+mongoose.connect(process.env.DB_CONNECTION_STRING,{ useUnifiedTopology: true , useNewUrlParser: true });
+const mongodb = mongoose.connection;
+mongodb.on('error', (error)=>{console.log(error)});
+mongodb.once('open', ()=>{console.log('Connected to DB!')});
+
+
 
 db.connect('./data', ['words']);
 var safeModeActivated = true;
 
 //start server 
-const port = process.env.PORT || 4000;
-
-server.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`)
+server.listen(process.env.PORT, () => {
+    console.log(`Server listening at http://localhost:${process.env.PORT}`)
 })
 
 // add html route handler
@@ -36,7 +40,6 @@ server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// CRUD / REST / Communicating with diskdb
 server.get("/words", (req, res) => {
     res.json(db.words.find());
 });
@@ -248,6 +251,7 @@ server.get("/words/scrapefromeki/:word", async (req, res) => {
     } else {
 
         var scrapedWord = await scrapers.scrapeWordFromEKI(word);
+
         res.json({
             message: 'from EKI',
             scrapedWord

@@ -1,15 +1,21 @@
 const mongoose = require('mongoose');
 
-const WordSchema = mongoose.Schema({
+const wordSchema = new mongoose.Schema({
     word: {
         type: String,
         required: true
     },
     definition: {
-        type: String,
+        type: [String],
         required: true
     },
-    example: String,
+    example: [String],
+    score: {
+        type: String,
+        default: "0"
+    }
 })
 
-module.exports = mongoose.model('Words', WordSchema);
+//'Word' - name of the model in our DB, teine on schema, mis sellega koos on
+// module.exports = mongoose.model('eng', wordSchema);
+module.exports = mongoose.model('eng', wordSchema);
