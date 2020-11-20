@@ -67,14 +67,14 @@ router.get('/random',async (req,res)=>{
 //post to mongo - works
 router.post('/', async (req,res)=>{
 
-    console.log(req.body);
+
     const newWord = new Word({
         word: req.body.word,
         definition: req.body.definition,
         example: req.body.example,
         score: req.body.score
     });
-    res.json(newWord);
+
 
     try{
         const postingWord = await newWord.save();
