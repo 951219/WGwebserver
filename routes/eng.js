@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/word');
+
+const db = require('diskdb');
 // const https = require('https');
 
 //get back specific word with different definitions using https package
@@ -83,6 +85,7 @@ router.post('/', async (req,res)=>{
         res.status(400).json({message: err.message})
     }
 })
+
 
 
 module.exports = router;

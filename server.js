@@ -8,6 +8,7 @@ const db = require('diskdb');
 const mongoose = require('mongoose');
 // const mongoWord = require('./routes/mongoWord');
 const engRoutes = require('./routes/eng');
+const estRoutes = require('./routes/est');
 
 
 const server = express();
@@ -17,13 +18,13 @@ server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
 server.use('/eng',engRoutes)
-// server.use('/mongoword',mongoWord);
+server.use('/est',estRoutes)
 
 
 mongoose.connect(process.env.DB_CONNECTION_STRING,{ useUnifiedTopology: true , useNewUrlParser: true });
 const mongodb = mongoose.connection;
 mongodb.on('error', (error)=>{console.log(error)});
-mongodb.once('open', ()=>{console.log('Connected to DB!')});
+mongodb.once('open', ()=>{console.log('Connected to MongoDB!')});
 
 
 

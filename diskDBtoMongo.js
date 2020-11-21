@@ -15,9 +15,9 @@ console.log(db.words.count());
 
 
 
-for (var numb =0; numb<5; numb++) {
+
 var wordFromDB = db.words.findOne({
-    index: numb.toString()
+    index: "6"
 });
 
 const newWord = new Word({
@@ -25,19 +25,13 @@ const newWord = new Word({
     definition: wordFromDB['definition'],
     example: wordFromDB['example']
 });
-
-postit(newWord);
-    
-
+try{
+    const postingWord = await newWord.save();
+    res.status(201).json(postingWord);
+}catch(err){
+    res.status(400).json({message: err.message})
 }
 
-async function postit(word) {
-    try{
-        const postingWord = await word.save();
-        console.log(postingWord);
-    }catch(err){
-        console.log({message: err.message});
-    }
-}
+
 
 //TODO not working
