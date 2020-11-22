@@ -13,10 +13,6 @@ const estWordSchema = new mongoose.Schema({
     score: {
         type: String,
         default: "0"
-    },
-    _id: {
-        type: String,
-        required: true
     }
 })
 
