@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const wordSchema = new mongoose.Schema({
+const engWordSchema = new mongoose.Schema({
     word: {
         type: String,
         required: true
@@ -16,6 +16,4 @@ const wordSchema = new mongoose.Schema({
     }
 })
 
-//'Word' - name of the model in our DB, teine on schema, mis sellega koos on
-// module.exports = mongoose.model('eng', wordSchema);
-module.exports = mongoose.model('eng', wordSchema);
+module.exports = mongoose.model('eng', engWordSchema);

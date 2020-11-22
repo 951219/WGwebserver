@@ -13,12 +13,12 @@ const estRoutes = require('./routes/est');
 
 const server = express();
 
-//APP.use() is a middle ware
+//APP.use() is a middleware
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
-server.use('/eng',engRoutes)
-server.use('/est',estRoutes)
+server.use('/eng',engRoutes);
+server.use('/est',estRoutes);
 
 
 mongoose.connect(process.env.DB_CONNECTION_STRING,{ useUnifiedTopology: true , useNewUrlParser: true });
@@ -41,27 +41,27 @@ server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-server.get("/words", (req, res) => {
-    res.json(db.words.find());
-});
+// server.get("/words", (req, res) => {
+//     res.json(db.words.find());
+// });
 
-server.get("/words/:id", (req, res) => {
-    const reqId = req.params.id;
-    const item = db.words.findOne({
-        index: reqId
-    })
+// server.get("/words/:id", (req, res) => {
+//     const reqId = req.params.id;
+//     const item = db.words.findOne({
+//         index: reqId
+//     })
 
-    if (item != null) {
-        console.log(`\nViewing word with an id of ${reqId} \n object: ${JSON.stringify(item)}`);
-        res.json(item);
-    } else {
-        console.log(`item ${reqId} doesn't exist`);
+//     if (item != null) {
+//         console.log(`\nViewing word with an id of ${reqId} \n object: ${JSON.stringify(item)}`);
+//         res.json(item);
+//     } else {
+//         console.log(`item ${reqId} doesn't exist`);
 
-        res.json({
-            message: `item ${reqId} doesn't exist`
-        })
-    }
-});
+//         res.json({
+//             message: `item ${reqId} doesn't exist`
+//         })
+//     }
+// });
 
 
 server.get("/safety/:bool", (req, res) => {
@@ -98,21 +98,20 @@ function changeSafeModeTo(bool) {
     }
 }
 
-server.post("/words", (req, res) => {
+// server.post("/words", (req, res) => {
+//     if (!safeModeActivated) {
+//         const item = req.body;
+//         console.log('Adding new word: ', item)
 
-    if (!safeModeActivated) {
-        const item = req.body;
-        console.log('Adding new word: ', item)
+//         db.words.save(item);
 
-        db.words.save(item);
-
-        res.json(db.words.find());
-    } else {
-        res.json({
-            message: 'No access'
-        })
-    }
-})
+//         res.json(db.words.find());
+//     } else {
+//         res.json({
+//             message: 'No access'
+//         })
+//     }
+// })
 
 server.put("/words/:id", (req, res) => {
     if (!safeModeActivated) {
@@ -134,22 +133,22 @@ server.put("/words/:id", (req, res) => {
     }
 });
 
-server.delete("/words/:id", (req, res) => {
-    if (!safeModeActivated) {
-        const itemId = req.params.id;
-        console.log(`Delete word with index: ${itemId}`);
+// server.delete("/words/:id", (req, res) => {
+//     if (!safeModeActivated) {
+//         const itemId = req.params.id;
+//         console.log(`Delete word with index: ${itemId}`);
 
-        db.words.remove({
-            index: itemId
-        });
+//         db.words.remove({
+//             index: itemId
+//         });
 
-        res.json(db.words.find());
-    } else {
-        res.json({
-            message: 'No access'
-        })
-    }
-});
+//         res.json(db.words.find());
+//     } else {
+//         res.json({
+//             message: 'No access'
+//         })
+//     }
+// });
 
 server.get("/words/exists/:word", (req, res) => {
     if (!safeModeActivated) {
@@ -167,38 +166,38 @@ server.get("/words/exists/:word", (req, res) => {
     }
 });
 
-server.get("/words/random/:number", (req, res) => {
-    const randNumber = req.params.number;
-    var randItems = new Array();
-    var arrayIDs = new Array();
+// server.get("/words/random/:number", (req, res) => {
+//     const randNumber = req.params.number;
+//     var randItems = new Array();
+//     var arrayIDs = new Array();
 
-    for (var i = 0; i < randNumber; i++) {
+//     for (var i = 0; i < randNumber; i++) {
 
-        const numb = Math.floor(
-            Math.random() * (db.words.find().length + 1));
+//         const numb = Math.floor(
+//             Math.random() * (db.words.find().length + 1));
 
-        const item = db.words.findOne({
-            index: numb.toString()
-        })
-        console.log(`loop ${i} - Adding word with an id of ${numb}`);
-        if (item !== undefined) {
-            if (!arrayIDs.includes(item.index)) {
-                arrayIDs.push(item.index);
-                randItems.push(item);
-            } else {
-                console.log(`loop ${i} - duplicate item not added, index: ${item.index}`);
-                i--;
-            }
+//         const item = db.words.findOne({
+//             index: numb.toString()
+//         })
+//         console.log(`loop ${i} - Adding word with an id of ${numb}`);
+//         if (item !== undefined) {
+//             if (!arrayIDs.includes(item.index)) {
+//                 arrayIDs.push(item.index);
+//                 randItems.push(item);
+//             } else {
+//                 console.log(`loop ${i} - duplicate item not added, index: ${item.index}`);
+//                 i--;
+//             }
 
-        } else {
-            const mm = `id ${numb} did not get any results from db, this item is undefined`
-            console.log(mm);
-            i--;
-        }
-    }
-    res.json(
-        randItems);
-});
+//         } else {
+//             const mm = `id ${numb} did not get any results from db, this item is undefined`
+//             console.log(mm);
+//             i--;
+//         }
+//     }
+//     res.json(
+//         randItems);
+// });
 
 function isAlreadyinDB(word) {
     const items = db.words.find({

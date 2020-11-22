@@ -1,29 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-const Word = require('../models/word');
-
-const db = require('diskdb');
-// const https = require('https');
-
-//get back specific word with different definitions using https package
-// router.get('/:word',async (req,res)=>{
-//     const url = `https://api.wordnik.com/v4/word.json/${req.params.word}/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key=${process.env.WORDNIK_API_KEY}`;
-//     const request = await https.get(url, (resp) => {
-//     let data = '';
-//     resp.on('data', (chunk) => {
-//         data += chunk;
-//     });
-//     resp.on('end', () => {
-//     res.json(JSON.parse(data));
-//     });
-//     }).on("error", (err) => {
-//     console.log("Error: " + err.message);
-//     });
-// });
+const Word = require('../models/engWord');
 
 
-//Get by word from wordnik
+//WORDNIK
+
+//Get by word from Wordnik
 router.get('/getbyword/:word',async (req,res)=>{
     const url = `https://api.wordnik.com/v4/word.json/${req.params.word}/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key=${process.env.WORDNIK_API_KEY}`;
     const fetch_response = await fetch(url);
@@ -33,8 +16,7 @@ router.get('/getbyword/:word',async (req,res)=>{
     //TODO check against my own db, if present, send from my db instead of wordnik
 });
 
-
-//Get specified amount of random words
+//Get specified amount of random words from Wordnik
 router.get('/random/:howmany',async (req,res)=>{
     var number = req.params.howmany;
     if(number==0) number = 1;
@@ -45,6 +27,7 @@ router.get('/random/:howmany',async (req,res)=>{
     
 });
 
+//Get 1 random from Wordnik
 router.get('/random',async (req,res)=>{
     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=${process.env.WORDNIK_API_KEY}`
     const fetch_response = await fetch(url);
@@ -53,38 +36,92 @@ router.get('/random',async (req,res)=>{
     
 });
 
-
-//get all from MOngo
-// router.get('/', async(req,res)=>{
-//     try{
-//         const words = await Word.find();
-//         res.send(words);
-//     }catch(err){
-//         res.status(500).json({message: err.message})
-//     }
-// })
+// #############################
 
 
 
-//post to mongo - works
+
+// get all from Mongo
+router.get('/', async(req,res)=>{
+    try{
+        const words = await Word.find();
+        res.send(words);
+    }catch(err){
+        res.status(500).json({message: err.message})
+    }
+})
+
+
+
+//Post to mongo 
 router.post('/', async (req,res)=>{
+    const response = await postWord(req.body);
+    if(response.added = true){
+        res.status(201).json(response.message)
+    }else{
+        res.status(400).json(response.message)
+    }
+})
 
+//Get random from Mongo
 
+//Get with higher score from Mongo
+
+//Delete word by id
+
+//delete all from collection
+router.delete('/delete/all',async (req,res)=>{
+    const response = await deleteCollection();
+    if(response.deleted = true){
+        res.json({message: "DB deleted"})
+    }else{
+        res.json({message: "Db not deleted"})
+    }
+});
+
+router.get("/:id", async(req, res) => {
+
+    try{
+        const item = await Word.findById(req.params.id);
+    return res.json(item);
+    }
+    catch(err){
+    return res.json({message: err.message})
+    }
+
+});
+
+//Functions 
+async function postWord(data){
     const newWord = new Word({
-        word: req.body.word,
-        definition: req.body.definition,
-        example: req.body.example,
-        score: req.body.score
+        word: data.word,
+        definition: data.definition,
+        example: data.example,
+        score: data.score
     });
-
 
     try{
         const postingWord = await newWord.save();
-        res.status(201).json(postingWord);
+        console.log(postingWord);
+        return {
+            added: true,
+            message: postingWord};
     }catch(err){
-        res.status(400).json({message: err.message})
+        return {
+            added: false,
+            message: "could not save it"};
     }
-})
+}
+
+async function deleteCollection(){
+    try{
+        await Word.remove({});
+        return {deleted: true};
+    }catch(err){
+        return {deleted: false,
+        message: err.message}
+    }
+}
 
 
 
