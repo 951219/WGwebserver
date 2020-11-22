@@ -9,7 +9,6 @@ router.post('/', async (req,res)=>{
     }else{
         res.status(400).json(response.message)
     }
-
 })
 
 router.get("/:id", getWord, (req, res) => {

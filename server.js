@@ -1,10 +1,8 @@
 require('dotenv/config');
 const express = require('express');
-// const scrapers = require('./scrapers.js');
 const morgan = require('morgan');
 const cors = require('cors');
 const body_parser = require('body-parser');
-// const db = require('diskdb');
 const mongoose = require('mongoose');
 const engRoutes = require('./routes/eng');
 const estRoutes = require('./routes/est');
@@ -29,7 +27,6 @@ server.listen(process.env.PORT, () => {
     console.log(`Server listening at http://localhost:${process.env.PORT}`)
 })
 
-// add html route handler
 server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });

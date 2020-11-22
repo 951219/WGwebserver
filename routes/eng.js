@@ -39,7 +39,34 @@ router.get('/random',async (req,res)=>{
 // #############################
 
 
+//Post to mongo 
+router.post('/', async (req,res)=>{
+    const response = await postWord(req.body);
+    if(response.added = true){
+        res.status(201).json(response.message)
+    }else{
+        res.status(400).json(response.message)
+    }
+});
 
+router.get("/:id", getWord, async(req, res) => {
+    res.json(res.word);
+});
+
+
+//Only for updating score
+router.patch("/:id", getWord, async (req, res)=>{
+    if(req.body.score != null){ 
+        res.word.score = req.body.score
+    }
+
+    try{
+        const updatedWord = await res.word.save();
+        res.json(updatedWord);
+    }catch(err){
+        res.status(400).json({message: err.message});
+    }
+})
 
 // get all from Mongo
 router.get('/', async(req,res)=>{
@@ -52,46 +79,45 @@ router.get('/', async(req,res)=>{
 })
 
 
-
-//Post to mongo 
-router.post('/', async (req,res)=>{
-    const response = await postWord(req.body);
-    if(response.added = true){
-        res.status(201).json(response.message)
-    }else{
-        res.status(400).json(response.message)
+router.delete("/:id", getWord, async (req, res) => {
+    try{
+        await res.word.remove();
+        res.json({message: "Word deleted"})
+    } catch(err) {
+        res.status(500).json({message: err.message});
     }
-})
+});
 
 //Get random from Mongo
 
 //Get with higher score from Mongo
 
-//Delete word by id
-
 //delete all from collection
-router.delete('/delete/all',async (req,res)=>{
-    const response = await deleteCollection();
-    if(response.deleted = true){
-        res.json({message: "DB deleted"})
-    }else{
-        res.json({message: "Db not deleted"})
-    }
-});
+// router.delete('/delete/all',async (req,res)=>{
+//     const response = await deleteCollection();
+//     if(response.deleted = true){
+//         res.json({message: "DB deleted"})
+//     }else{
+//         res.json({message: "Db not deleted"})
+//     }
+// });
 
-router.get("/:id", async(req, res) => {
-
-    try{
-        const item = await Word.findById(req.params.id);
-    return res.json(item);
-    }
-    catch(err){
-    return res.json({message: err.message})
-    }
-
-});
 
 //Functions 
+async function getWord(req, res, next){
+    let word;
+    try{
+        word = await Word.findById(req.params.id);
+        if(word == null){
+            return res.status(404).json({message: "Cannot find the word"});
+        }
+    } catch(err){
+    return res.status(500).json({message: err.message});
+    }
+    res.word = word;
+    next();
+}
+
 async function postWord(data){
     const newWord = new Word({
         word: data.word,
@@ -113,15 +139,15 @@ async function postWord(data){
     }
 }
 
-async function deleteCollection(){
-    try{
-        await Word.remove({});
-        return {deleted: true};
-    }catch(err){
-        return {deleted: false,
-        message: err.message}
-    }
-}
+// async function deleteCollection(){
+//     try{
+//         await Word.remove({});
+//         return {deleted: true};
+//     }catch(err){
+//         return {deleted: false,
+//         message: err.message}
+//     }
+// }
 
 
 
