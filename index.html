@@ -6,38 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webserver</title>
 </head>
-<!-- TODO fix endpoints -->
-<body>
-    <h1 style="color: black;">
-        Welcome to Word Guesser API.
-        <br>
-        Additional information<br>
-        <br>
-        Web server: <a href="https://github.com/951219/WGwebserver">https://github.com/951219/WGwebserver</a><br>
-        Chrome extentsion: <a href="https://github.com/951219/WGCE">https://github.com/951219/WGCE</a><br>
-        Flutter app: <a href="https://github.com/951219/WGapp">https://github.com/951219/WGapp</a><br>
-        <br>
-        <br>
-        Endpoints:<br>
-        <a href="/words">GET /words - get all words</a><br>
-        POST /words - add a word<br>
-        <a href="/words/1">GET /words/:id - get word by id</a><br>
-        PUT /words/:id - modify a word<br>
-        DELETE /words/:id - delete a word by id<br>
-        <a href="/words/random/3">GET /words/random/:number - get number of random words</a><br>
-        <a href="/words/getbyword/koer">GET /words/getbyword/:word - get word by word</a><br>
-        <a href="/words/exists/koer">GET /words/exists/:word - check if exists by word</a><br>
-        <a href="/words/scrapefromeki/koer">GET /words/scrapefromeki/:word - scrape definition from EKI</a>
-        <br>
-        <br>
 
-        History:<br>
-        Second vesion as an android app: <a
-            href="https://github.com/951219/DictionaryApp/">https://github.com/951219/DictionaryApp/</a><br>
-        Fist version as a terminal program: <a
-            href="https://github.com/951219/WordQuesser/">https://github.com/951219/WordQuesser/</a><br>
-        <br>
-    </h1>
+<body>
+    <div style="width: 100%;">
+        <div style="height: 100px; float: left;">
+            
+            Welcome to Word Guesser API.
+            <br>
+            Additional information<br>
+            <br>
+            Web server: <a href="https://github.com/951219/WGwebserver">https://github.com/951219/WGwebserver</a><br>
+            Chrome extentsion: <a href="https://github.com/951219/WGCE">https://github.com/951219/WGCE</a><br>
+            Flutter app: <a href="https://github.com/951219/WGapp">https://github.com/951219/WGapp</a><br>
+            <br>
+            <br>
+            Endpoints:<br>
+            POST /est - add a word<br>
+            <a href="/est/5fbb7215f4d4ff70dcd92da7" target="search_iframe">GET /est/:id - get word by id</a><br>
+            PATCH /est/:id - modify a word<br>
+            <a href="/est" target="search_iframe">GET /words - get all EST words</a><br>
+            DELETE /est/:id - delete a word by id<br>
+            <!-- <a href="/words/scrapefromeki/koer" target="search_iframe">GET /words/scrapefromeki/:word - scrape definition from EKI</a> -->
+            <br>
+            <br>
+            <br>
+            <a href="/eng/getbyword/juvenile" target="search_iframe">GET /getbyword/:word - get word by word from wordnik</a><br>
+            <a href="/eng/random/3"  target="search_iframe">GET /eng/random/:number - get number of random words from wordnik</a><br>
+            <a href="/eng/random"  target="search_iframe">GET /eng/random - get 1 random word from wordnik</a><br>
+            POST /eng - add a word<br>
+            <a href="/eng/5fbb6dd29b76be6fcba33c43" target="search_iframe">GET /eng/:id - get word by id</a><br>
+            PATCH /eng/:id - modify a word<br>
+            <a href="/eng" target="search_iframe">GET /eng - get all ENG words</a><br>
+            DELETE /eng/:id - delete a word by id<br>
+            <br>
+            <br>
+
+            History:<br>
+            Second vesion as an android app: <a
+                href="https://github.com/951219/DictionaryApp/">https://github.com/951219/DictionaryApp/</a><br>
+            Fist version as a terminal program: <a
+                href="https://github.com/951219/WordQuesser/">https://github.com/951219/WordQuesser/</a><br>
+            <br>
+        
+    </div>  
+        <div style="margin-left: 40%; height: 300px; width: 300px;">
+            <iframe src="" name="search_iframe" style="height: 50vh; width: 100vh;"></iframe>
+        </div>
+    </div>
 </body>
 
 </html>
