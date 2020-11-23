@@ -43,9 +43,9 @@ router.get('/random',async (req,res)=>{
 router.post('/', async (req,res)=>{
     const response = await postWord(req.body);
     if(response.added = true){
-        res.status(201).json(response.message)
+        res.status(201).json(response.message);
     }else{
-        res.status(400).json(response.message)
+        res.status(400).json(response.message);
     }
 });
 
@@ -135,7 +135,7 @@ async function postWord(data){
     }catch(err){
         return {
             added: false,
-            message: "could not save it"};
+            message: err.message};
     }
 }
 
