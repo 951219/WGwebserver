@@ -1,4 +1,5 @@
-if (process.env.NODE_ENV !== 'production') require('dotenv/config');
+const runningInDevelopement = (process.env.NODE_ENV !== 'production');
+if (runningInDevelopement) require('dotenv/config');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -22,10 +23,13 @@ const mongodb = mongoose.connection;
 mongodb.on('error', (error)=>{console.log(error)});
 mongodb.once('open', ()=>{console.log('Connected to MongoDB!')});
 
-//start server 
 server.listen(process.env.PORT, () => {
-    console.log(`Server listening at http://localhost:${process.env.PORT}`)
-})
+    if(runningInDevelopement){
+        console.log(`Server started in development at http://localhost:${process.env.PORT}`)}
+    else{
+        console.log(`Server started in production at port${process.env.PORT}`)}
+    }
+);
 
 server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
