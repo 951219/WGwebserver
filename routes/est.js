@@ -107,8 +107,6 @@ async function postWord(data) {
 
 // TODO getByWord from DB
 
-// TODO scrape from EKI
-
 // server.get("/words/scrapefromeki/:word", async (req, res) => {
 //     // TODO: ATM pulling from DB twice, needs refactoring so maybe it would redirect the client to endpoint that pulls from db
 //     // TODO: scraping works locally, not in heroku
@@ -135,13 +133,5 @@ async function postWord(data) {
 //     }
 // });
 
+
 module.exports = router;
-
-//TODO pulling from ekilex
-/*
-Returns word id by Word from EKI API - https://ekilex.eki.ee/api/word/search/{word}/sss  - sss - EKI sõnastik 2020
-Returns definitions by word it from EKI API - https://ekilex.eki.ee/api/word/details/{wordID}
-
-ekilex-api-key as a header is necessary for both
-
-*/
