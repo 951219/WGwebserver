@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Word = require('../models/estWord');
 
-router.post('/', async (req,res)=>{
+router.post('/', async (req, res) => {
     const response = await postWord(req.body);
-    if(response.added = true){
+    if (response.added = true) {
         res.status(201).json(response.message)
-    }else{
+    } else {
         res.status(400).json(response.message)
     }
 })
@@ -16,35 +16,35 @@ router.get("/:id", getWord, (req, res) => {
 });
 
 //Only for updating score
-router.patch("/:id", getWord, async (req, res)=>{
-    if(req.body.score != null){ 
+router.patch("/:id", getWord, async (req, res) => {
+    if (req.body.score != null) {
         res.word.score = req.body.score
     }
 
-    try{
+    try {
         const updatedWord = await res.word.save();
         res.json(updatedWord);
-    }catch(err){
-        res.status(400).json({message: err.message});
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 })
 
 //Get all
-router.get('/', async (req,res)=>{
-    try{
+router.get('/', async (req, res) => {
+    try {
         const words = await Word.find();
         res.send(words);
-    }catch(err){
-        res.status(500).json({message: err.message})
+    } catch (err) {
+        res.status(500).json({ message: err.message })
     }
 })
 
 router.delete("/:id", getWord, async (req, res) => {
-    try{
+    try {
         await res.word.remove();
-        res.json({message: "Word deleted"})
-    } catch(err) {
-        res.status(500).json({message: err.message});
+        res.json({ message: "Word deleted" })
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -57,15 +57,15 @@ router.delete("/:id", getWord, async (req, res) => {
 //     }
 // });
 
-async function getWord(req, res, next){
+async function getWord(req, res, next) {
     let word;
-    try{
+    try {
         word = await Word.findById(req.params.id);
-        if(word == null){
-            return res.status(404).json({message: "Cannot find the word"});
+        if (word == null) {
+            return res.status(404).json({ message: "Cannot find the word" });
         }
-    } catch(err){
-    return res.status(500).json({message: err.message});
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
     }
     res.word = word;
     next();
@@ -81,7 +81,7 @@ async function getWord(req, res, next){
 //     }
 // }
 
-async function postWord(data){
+async function postWord(data) {
     const newWord = new Word({
         word: data.word,
         definition: data.definition,
@@ -89,16 +89,18 @@ async function postWord(data){
         score: data.score
     });
 
-    try{
+    try {
         const postingWord = await newWord.save();
         console.log(postingWord);
         return {
             added: true,
-            message: postingWord};
-    }catch(err){
+            message: postingWord
+        };
+    } catch (err) {
         return {
             added: false,
-            message: "could not save it"};
+            message: "could not save it"
+        };
     }
 }
 
@@ -135,3 +137,11 @@ async function postWord(data){
 
 module.exports = router;
 
+//TODO pulling from ekilex
+/*
+Returns word id by Word from EKI API - https://ekilex.eki.ee/api/word/search/{word}/sss  - sss - EKI sõnastik 2020
+Returns definitions by word it from EKI API - https://ekilex.eki.ee/api/word/details/{wordID}
+
+ekilex-api-key as a header is necessary for both
+
+*/

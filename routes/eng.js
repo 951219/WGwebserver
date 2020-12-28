@@ -7,7 +7,7 @@ const Word = require('../models/engWord');
 //WORDNIK
 
 //Get by word from Wordnik
-router.get('/getbyword/:word',async (req,res)=>{
+router.get('/getbyword/:word', async (req, res) => {
     const url = `https://api.wordnik.com/v4/word.json/${req.params.word}/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key=${process.env.WORDNIK_API_KEY}`;
     const fetch_response = await fetch(url);
     const json = await fetch_response.json();
@@ -17,74 +17,74 @@ router.get('/getbyword/:word',async (req,res)=>{
 });
 
 //Get specified amount of random words from Wordnik
-router.get('/random/:howmany',async (req,res)=>{
+router.get('/random/:howmany', async (req, res) => {
     var number = req.params.howmany;
-    if(number==0) number = 1;
+    if (number == 0) number = 1;
     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=${number}&api_key=${process.env.WORDNIK_API_KEY}`
     const fetch_response = await fetch(url);
     const json = await fetch_response.json();
     res.json(json);
-    
+
 });
 
 //Get 1 random from Wordnik
-router.get('/random',async (req,res)=>{
+router.get('/random', async (req, res) => {
     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=${process.env.WORDNIK_API_KEY}`
     const fetch_response = await fetch(url);
     const json = await fetch_response.json();
     res.json(json);
-    
+
 });
 
 // #############################
 
 
 //Post to mongo 
-router.post('/', async (req,res)=>{
+router.post('/', async (req, res) => {
     const response = await postWord(req.body);
-    if(response.added = true){
+    if (response.added = true) {
         res.status(201).json(response.message);
-    }else{
+    } else {
         res.status(400).json(response.message);
     }
 });
 
-router.get("/:id", getWord, async(req, res) => {
+router.get("/:id", getWord, async (req, res) => {
     res.json(res.word);
 });
 
 
 //Only for updating score
-router.patch("/:id", getWord, async (req, res)=>{
-    if(req.body.score != null){ 
+router.patch("/:id", getWord, async (req, res) => {
+    if (req.body.score != null) {
         res.word.score = req.body.score
     }
 
-    try{
+    try {
         const updatedWord = await res.word.save();
         res.json(updatedWord);
-    }catch(err){
-        res.status(400).json({message: err.message});
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 })
 
 // get all from Mongo
-router.get('/', async(req,res)=>{
-    try{
+router.get('/', async (req, res) => {
+    try {
         const words = await Word.find();
         res.send(words);
-    }catch(err){
-        res.status(500).json({message: err.message})
+    } catch (err) {
+        res.status(500).json({ message: err.message })
     }
 })
 
 
 router.delete("/:id", getWord, async (req, res) => {
-    try{
+    try {
         await res.word.remove();
-        res.json({message: "Word deleted"})
-    } catch(err) {
-        res.status(500).json({message: err.message});
+        res.json({ message: "Word deleted" })
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -104,21 +104,21 @@ router.delete("/:id", getWord, async (req, res) => {
 
 
 //Functions 
-async function getWord(req, res, next){
+async function getWord(req, res, next) {
     let word;
-    try{
+    try {
         word = await Word.findById(req.params.id);
-        if(word == null){
-            return res.status(404).json({message: "Cannot find the word"});
+        if (word == null) {
+            return res.status(404).json({ message: "Cannot find the word" });
         }
-    } catch(err){
-    return res.status(500).json({message: err.message});
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
     }
     res.word = word;
     next();
 }
 
-async function postWord(data){
+async function postWord(data) {
     const newWord = new Word({
         word: data.word,
         definition: data.definition,
@@ -126,16 +126,18 @@ async function postWord(data){
         score: data.score
     });
 
-    try{
+    try {
         const postingWord = await newWord.save();
         console.log(postingWord);
         return {
             added: true,
-            message: postingWord};
-    }catch(err){
+            message: postingWord
+        };
+    } catch (err) {
         return {
             added: false,
-            message: err.message};
+            message: err.message
+        };
     }
 }
 

@@ -14,21 +14,23 @@ const server = express();
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
-server.use('/eng',engRoutes);
-server.use('/est',estRoutes);
+server.use('/eng', engRoutes);
+server.use('/est', estRoutes);
 
 
-mongoose.connect(process.env.DB_CONNECTION_STRING,{ useUnifiedTopology: true , useNewUrlParser: true });
+mongoose.connect(process.env.DB_CONNECTION_STRING, { useUnifiedTopology: true, useNewUrlParser: true });
 const mongodb = mongoose.connection;
-mongodb.on('error', (error)=>{console.log(error)});
-mongodb.once('open', ()=>{console.log('Connected to MongoDB!')});
+mongodb.on('error', (error) => { console.log(error) });
+mongodb.once('open', () => { console.log('Connected to MongoDB!') });
 
 server.listen(process.env.PORT, () => {
-    if(runningInDevelopement){
-        console.log(`Server started in development at http://localhost:${process.env.PORT}`)}
-    else{
-        console.log(`Server started in production at port${process.env.PORT}`)}
+    if (runningInDevelopement) {
+        console.log(`Server started in development at http://localhost:${process.env.PORT}`)
     }
+    else {
+        console.log(`Server started in production at port: ${process.env.PORT}`)
+    }
+}
 );
 
 server.get("/", (req, res) => {
