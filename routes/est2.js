@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 
 
 router.get('/ekilex/:word', async (req, res) => {
-
     let reqWord = await getWord(req.params.word);
     let details = await getWordDetails(reqWord);
     let completedWord = await createAWord(details);
@@ -51,10 +50,6 @@ router.get('/ekilex/:word', async (req, res) => {
 //         };
 //     }
 // }
-
-
-//TODO pull definitions with IDs from ekilex and create a word to return
-
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
 async function getWord(reqWord) {
@@ -119,3 +114,8 @@ async function createAWord(wordDetails) {
 module.exports = router;
 
 // TODO getting the score and id from mongo
+// TODO another endpoints could be used? There would be less irrelevant data to work with
+/*
+ https://ekilex.eki.ee/api/meaning/search/profülaktiline
+ https://ekilex.eki.ee/api/meaning/details/82513
+*/
