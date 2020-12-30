@@ -115,6 +115,7 @@ module.exports = router;
 
 // TODO getting the score and id from mongo
 // TODO another endpoints could be used? There would be less irrelevant data to work with
+
 /*
  https://ekilex.eki.ee/api/meaning/search/profülaktiline
  https://ekilex.eki.ee/api/meaning/details/82513
