@@ -1,16 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-
+const Word = require('../models/newEstWord');
 
 router.get('/ekilex/:word', async (req, res) => {
     let reqWord = await getWord(req.params.word);
-    let details = await getWordDetails(reqWord);
-    let completedWord = await createAWord(details);
-
-    res.json(
-        completedWord
-    );
+    if (reqWord['words']) {
+        let details = await getWordDetails(reqWord);
+        let completedWord = await createAWordFromEkilexData(details);
+        console.log(await postWordToDB(completedWord));
+        res.json(
+            completedWord
+        );
+    } else {
+        res.json({ error: reqWord.message });
+    }
 
 });
 
@@ -28,28 +32,6 @@ router.get('/ekilex/:word', async (req, res) => {
 //     next();
 // }
 
-// async function postWord(data) {
-//     const newWord = new Word({
-//         word: data.word,
-//         definition: data.definition,
-//         example: data.example,
-//         score: data.score
-//     });
-
-//     try {
-//         const postingWord = await newWord.save();
-//         console.log(postingWord);
-//         return {
-//             added: true,
-//             message: postingWord
-//         };
-//     } catch (err) {
-//         return {
-//             added: false,
-//             message: "could not save it"
-//         };
-//     }
-// }
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
 async function getWord(reqWord) {
@@ -60,7 +42,12 @@ async function getWord(reqWord) {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } }).catch(err => console.error(err));
         const json = await fetch_response.json();
         word = json;
-        console.log('Success - got the word from ekilex');
+        console.log(`Success -> getWord() -> got the answer from ekilex, total count for words: ${word['totalCount']}`);
+
+        if (word['totalCount'] == 0) {
+            return { message: "No such word found" }
+        }
+
     } catch (err) {
         return { message: err.message };
     }
@@ -83,16 +70,13 @@ async function getWordDetails(word) {
     return wordDetails;
 }
 
-// 3. Create a word object
-// a. "lexemes[]"
-// b. igaühel"meaning{}"
-// c. igal objectil  definitions[]
-// d. igal objectil value
-async function createAWord(wordDetails) {
+// 3. Create a word from word Details
+async function createAWordFromEkilexData(wordDetails) {
     let wordId = wordDetails["lexemes"][0]["wordId"];
     let word = wordDetails["lexemes"][0]["wordValue"];
     let definitions = [];
     let examples = [];
+
 
     let lexemes = wordDetails["lexemes"];
 
@@ -111,9 +95,36 @@ async function createAWord(wordDetails) {
     return { wordId, word, definitions, examples };
 }
 
+async function postWordToDB(ekilexData) {
+
+    //TODO if exists already by ID
+
+    const newWord = new Word({
+        wordId: ekilexData.wordId,
+        word: ekilexData.word,
+        meaning: ekilexData.definitions,
+        example: ekilexData.examples,
+        timeAdded: Date.now()
+    });
+
+    try {
+        const postingWord = await newWord.save();
+        console.log(postingWord);
+        return {
+            added: true,
+            message: postingWord
+        };
+    } catch (err) {
+        return {
+            added: false,
+            message: "could not save it",
+            error: err.message
+        };
+    }
+}
+
 module.exports = router;
 
-// TODO getting the score and id from mongo
 // TODO another endpoints could be used? There would be less irrelevant data to work with
 
 /*
