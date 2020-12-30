@@ -4,11 +4,10 @@ const fetch = require('node-fetch');
 const Word = require('../models/newEstWord');
 
 router.get('/ekilex/:word', async (req, res) => {
-    let reqWord = await getWord(req.params.word);
+    let reqWord = await searchEkilexForAWord(req.params.word);
     if (reqWord['words']) {
         let details = await getWordDetails(reqWord);
         let completedWord = await createAWordFromEkilexData(details);
-        console.log(await postWordToDB(completedWord));
         res.json(
             completedWord
         );
@@ -34,20 +33,21 @@ router.get('/ekilex/:word', async (req, res) => {
 
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
-async function getWord(reqWord) {
+async function searchEkilexForAWord(reqWord) {
     const url = `https://ekilex.eki.ee/api/word/search/${encodeURI(reqWord)}/sss`;
 
     let word;;
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } }).catch(err => console.error(err));
         const json = await fetch_response.json();
-        word = json;
-        console.log(`Success -> getWord() -> got the answer from ekilex, total count for words: ${word['totalCount']}`);
 
-        if (word['totalCount'] == 0) {
-            return { message: "No such word found" }
+        if (json['totalCount'] == 0) {
+            console.error(`Failure -> searchEkilexForAWord() -> Total count for word ${reqWord}: ${json['totalCount']}`)
+            return { message: `No such word found: ${reqWord}` }
+        } else {
+            console.log(`Success -> searchEkilexForAWord() -> total count for word ${reqWord}: ${json['totalCount']}`);
+            word = json;
         }
-
     } catch (err) {
         return { message: err.message };
     }
@@ -109,7 +109,7 @@ async function postWordToDB(ekilexData) {
 
     try {
         const postingWord = await newWord.save();
-        console.log(postingWord);
+        console.log(`Word ${postingWord.word} posted to DB`);
         return {
             added: true,
             message: postingWord
@@ -122,6 +122,8 @@ async function postWordToDB(ekilexData) {
         };
     }
 }
+
+
 
 module.exports = router;
 
