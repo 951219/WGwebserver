@@ -1,137 +1,130 @@
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 const Word = require('../models/estWord');
 
-router.post('/', async (req, res) => {
-    const response = await postWord(req.body);
-    if (response.added = true) {
-        res.status(201).json(response.message)
-    } else {
-        res.status(400).json(response.message)
-    }
-})
-
-router.get("/:id", getWord, (req, res) => {
-    res.json(res.word);
+router.get('/get/:word', getWord, (req, res) => {
+    res.status(200).json(res.word);
 });
 
-//Only for updating score
-router.patch("/:id", getWord, async (req, res) => {
-    if (req.body.score != null) {
-        res.word.score = req.body.score
-    }
+// 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
+async function searchEkilexForAWord(queryWord) {
+    console.log(`Querying ekilex for word ${queryWord}`);
+    const url = `https://ekilex.eki.ee/api/word/search/${encodeURI(queryWord)}/sss`;
 
     try {
-        const updatedWord = await res.word.save();
-        res.json(updatedWord);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-})
+        const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } }).catch((err) => {
+            return {
+                message: `No such word found: ${queryWord}`,
+                error: err.message
+            }
+        });
+        const json = await fetch_response.json();
 
-//Get all
-router.get('/', async (req, res) => {
-    try {
-        const words = await Word.find();
-        res.send(words);
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-})
-
-router.delete("/:id", getWord, async (req, res) => {
-    try {
-        await res.word.remove();
-        res.json({ message: "Word deleted" })
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// router.delete('/delete/all',async (req,res)=>{
-//     const response = await deleteDB();
-//     if(response.deleted = true){
-//         res.json({message: "DB deleted"})
-//     }else{
-//         res.json({message: "Db not deleted"})
-//     }
-// });
-
-async function getWord(req, res, next) {
-    let word;
-    try {
-        word = await Word.findById(req.params.id);
-        if (word == null) {
-            return res.status(404).json({ message: "Cannot find the word" });
+        if (json['totalCount'] == 0) {
+            console.error(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`)
+            return { message: `No such word found: ${queryWord}` }
+        } else {
+            console.log(`Success -> searchEkilexForAWord() -> total count for word ${queryWord}: ${json['totalCount']}`);
+            return json;
         }
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return { message: err.message };
     }
-    res.word = word;
-    next();
+
 }
 
-// async function deleteDB(){
-//     try{
-//         await Word.remove({});
-//         return {deleted: true};
-//     }catch(err){
-//         return {deleted: false,
-//         message: err.message}
-//     }
-// }
+// 2. Getting the definitions by word id - https://ekilex.eki.ee/api/word/details/{wordID}
+async function getWordDetails(word) {
+    const url = `https://ekilex.eki.ee/api/word/details/${word["words"][0]["wordId"]}`;
 
-async function postWord(data) {
+    let wordDetails;
+    try {
+        const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } });
+        const json = await fetch_response.json();
+        wordDetails = json;
+        console.log(`Success -> getWordDetails() -> got the word details from ekilex`);
+    } catch (err) {
+        return { message: err.message };
+    }
+    return wordDetails;
+}
+// 3. Create a word from word Details
+async function createAWordFromEkilexData(wordDetails) {
+    let wordId = wordDetails["lexemes"][0]["wordId"];
+    let word = wordDetails["lexemes"][0]["wordValue"];
+    let definitions = [];
+    let examples = [];
+
+
+    let lexemes = wordDetails["lexemes"];
+
+    lexemes.forEach(element => {
+        element["meaning"]["definitions"].forEach(item => {
+            definitions.push(item["value"]);
+        })
+    });
+
+    lexemes.forEach(element => {
+        element["usages"].forEach(item => {
+            examples.push(item["value"]);
+        })
+    });
+
+    return { wordId, word, definitions, examples };
+}
+
+async function postWordToDB(wordObject) {
+    console.log(`Posting word ${wordObject.word} to DB`);
+
     const newWord = new Word({
-        word: data.word,
-        definition: data.definition,
-        example: data.example,
-        score: data.score
+        wordId: wordObject.wordId,
+        word: wordObject.word,
+        meaning: wordObject.definitions,
+        example: wordObject.examples,
+        timeAdded: Date.now()
     });
 
     try {
         const postingWord = await newWord.save();
-        console.log(postingWord);
-        return {
-            added: true,
-            message: postingWord
-        };
+        console.log(`Word ${postingWord.word} posted to DB`);
+
     } catch (err) {
-        return {
-            added: false,
-            message: "could not save it"
-        };
+        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB`);
     }
 }
-
-
-// TODO getByWord from DB
-
-// server.get("/words/scrapefromeki/:word", async (req, res) => {
-//     // TODO: ATM pulling from DB twice, needs refactoring so maybe it would redirect the client to endpoint that pulls from db
-//     // TODO: scraping works locally, not in heroku
-
-//     var word = req.params.word;
-
-//     if (isAlreadyinDB(word)) {
-//         var wordFromDB = db.words.find({
-//             word: word
-//         });
-
-//         res.json({
-//             message: 'from DB',
-//             wordFromDB
-//         })
-//     } else {
-
-//         var scrapedWord = await scrapers.scrapeWordFromEKI(word);
-
-//         res.json({
-//             message: 'from EKI',
-//             scrapedWord
-//         });
-//     }
-// });
-
+async function getWord(req, res, next) {
+    let requestedWord = req.params.word;
+    let responseWord;
+    try {
+        responseWord = await Word.find({
+            word: requestedWord
+        });
+        if (responseWord.length == 0) {
+            console.log(`Cannot find the word ${requestedWord} from DB`);
+            let ekilexWord = await searchEkilexForAWord(requestedWord);
+            if (ekilexWord['words']) {
+                let data = await getWordDetails(ekilexWord);
+                let completedWord = await createAWordFromEkilexData(data);
+                await postWordToDB(completedWord);
+                res.word = completedWord;
+            } else {
+                return res.status(500).json({ message: ekilexWord.message });
+            }
+        } else {
+            console.log(`Found the word ${req.params.word} from DB and returning it`);
+            res.word = responseWord;
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+    next();
+}
 
 module.exports = router;
+
+// maybe another endpoints could be used? There would be less irrelevant data to work with
+/*
+ https://ekilex.eki.ee/api/meaning/search/profülaktiline
+ https://ekilex.eki.ee/api/meaning/details/82513
+*/

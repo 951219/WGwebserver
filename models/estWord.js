@@ -1,22 +1,24 @@
 const mongoose = require('mongoose');
 
-const estWordSchema = new mongoose.Schema({
+const newEstWordSchema = new mongoose.Schema({
     word: {
         type: String,
         required: true
     },
-    definition: {
+    meaning: {
         type: [String],
         required: true
     },
     example: [String],
-    score: {
-        type: String,
-        default: "0"
+    timeAdded: {
+        type: Date,
+        required: true,
     },
-    _id: String
-    // might cause problems when posting
+    wordId: {
+        type: Number,
+        required: true
+    }
 })
 
 
-module.exports = mongoose.model('est', estWordSchema);
+module.exports = mongoose.model('estWord', newEstWordSchema);
