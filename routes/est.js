@@ -107,6 +107,16 @@ async function getWord(req, res, next) {
                 let data = await getWordDetails(ekilexWord);
                 let completedWord = await createAWordFromEkilexData(data);
                 await postWordToDB(completedWord);
+
+                console.log('checking fromm db again');
+                //TODO method for checking from DB try/catch
+                try {
+                    completedWord = await Word.find({
+                        word: requestedWord
+                    });
+                } catch (err) {
+                    return res.status(500).json({ message: err.message });
+                }
                 res.word = completedWord;
             } else {
                 return res.status(500).json({ message: ekilexWord.message });
