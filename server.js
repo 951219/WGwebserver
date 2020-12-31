@@ -11,6 +11,21 @@ const estRoutes = require('./routes/est');
 
 const server = express();
 
+
+// -- Auth
+const basicAuth = require('express-basic-auth')
+server.use(basicAuth({
+    users: { "admin": "test" },
+    unauthorizedResponse: getUnauthorizedResponse
+}));
+
+function getUnauthorizedResponse(req) {
+    return req.auth
+        ? { message: 'Credentials ' + req.auth.user + ' : ' + req.auth.password + ' rejected' }
+        : { message: 'No credentials provided' }
+}
+// --
+
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
@@ -36,5 +51,3 @@ server.listen(process.env.PORT, () => {
 server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
-
-// TODO: basic security as a middleware
