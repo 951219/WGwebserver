@@ -79,32 +79,19 @@ router.get('/', async (req, res) => {
 })
 
 
-router.delete("/:id", getWord, async (req, res) => {
-    try {
-        await res.word.remove();
-        res.json({ message: "Word deleted" })
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-//Get random from Mongo
-
-//Get with higher score from Mongo
-
-//delete all from collection
-// router.delete('/delete/all',async (req,res)=>{
-//     const response = await deleteCollection();
-//     if(response.deleted = true){
-//         res.json({message: "DB deleted"})
-//     }else{
-//         res.json({message: "Db not deleted"})
+// router.delete("/:id", getWord, async (req, res) => {
+//     try {
+//         await res.word.remove();
+//         res.json({ message: "Word deleted" })
+//     } catch (err) {
+//         res.status(500).json({ message: err.message });
 //     }
 // });
 
 
 //Functions 
 async function getWord(req, res, next) {
+    // TODO use the same approach as in est endpoint. id db has it, it will return from there, if not, then it will pull it from wordnkik
     let word;
     try {
         word = await Word.findById(req.params.id);
@@ -140,17 +127,6 @@ async function postWord(data) {
         };
     }
 }
-
-// async function deleteCollection(){
-//     try{
-//         await Word.remove({});
-//         return {deleted: true};
-//     }catch(err){
-//         return {deleted: false,
-//         message: err.message}
-//     }
-// }
-
 
 
 module.exports = router;
