@@ -13,17 +13,17 @@ const server = express();
 
 
 // -- Auth
-const basicAuth = require('express-basic-auth')
-server.use(basicAuth({
-    users: { "admin": "test" },
-    unauthorizedResponse: getUnauthorizedResponse
-}));
+// const basicAuth = require('express-basic-auth')
+// server.use(basicAuth({
+//     users: { "admin": "test" },
+//     unauthorizedResponse: getUnauthorizedResponse
+// }));
 
-function getUnauthorizedResponse(req) {
-    return req.auth
-        ? { message: 'Credentials ' + req.auth.user + ' : ' + req.auth.password + ' rejected' }
-        : { message: 'No credentials provided' }
-}
+// function getUnauthorizedResponse(req) {
+//     return req.auth
+//         ? { message: 'Credentials ' + req.auth.user + ' : ' + req.auth.password + ' rejected' }
+//         : { message: 'No credentials provided' }
+// }
 // --
 
 server.use(body_parser.json());
