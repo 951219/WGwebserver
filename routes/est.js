@@ -7,13 +7,14 @@ router.get('/get/:word', getWord, (req, res) => {
     res.status(200).json(res.word);
 });
 
-// getting 1 random from mongo
-router.get('/random/', async (req, res) => {
-    let word = await Word.aggregate([{ $sample: { size: 1 } }]);
+// getting random amount from mongo TODO: might return duplicates
+router.get('/random/:number', async (req, res) => {
+    var howmany = parseInt(req.params.number);
+    let word = await Word.aggregate([{ $sample: { size: howmany } }]);
     res.status(200).json(word);
 })
 
-//TODO get package of 1 for 1 round of guessing
+//TODO bundle for 1 round of guessing
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
 async function searchEkilexForAWord(queryWord) {
