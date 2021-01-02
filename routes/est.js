@@ -14,6 +14,11 @@ router.get('/random/:number', async (req, res) => {
     res.status(200).json(word);
 })
 
+router.get('/getall/', async (req, res) => {
+    let words = await Word.find();
+    res.status(200).json(words);
+});
+
 //TODO bundle for 1 round of guessing
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
