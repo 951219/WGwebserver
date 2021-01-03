@@ -146,35 +146,45 @@ async function getWord(req, res, next) {
     }
     next();
 }
-async function addToUsersWordsDB(wordObject, userId) {
-    //TODO check if there is already an entry for that user, if there is, then only modify the entry and do not add a new entry
+
+
+// TODO works but needs some love
+router.get('/test/get/:word', getWord, (req, res) => {
+    addToUserDictionary(res.word, 2);
+    res.status(200).json(res.word);
+});
+
+async function addToUserDictionary(wordObject, userId) {
     wordObject = wordObject[0];
-    const entry = new UserModel({
-        userId: userId,
-        words: [
-            {
-                wordId: wordObject.wordId,
+    //1. get that user since you can only add, if you have an account
+    let user = await UserModel.findOne({
+        user_id: userId
+    });
+
+    if (user !== null) {
+        //2. check if they already have it
+        let list = user.words;
+        let found = list.find((element) => element.word_id == wordObject.wordId);
+        if (found !== undefined) {
+            console.log('User already has this word');
+        } else {
+            console.log('User does not have this word, adding it to db');
+            list.push({
+                word_id: wordObject.wordId,
                 lang: 'est',
                 word: wordObject.word,
                 score: 0
+            });
+            try {
+                await user.update({
+                    words: list
+                });
+            } catch (err) {
+                console.log(err.message);
             }
-
-        ]
-
-    });
-
-    try {
-        await entry.save();
-        console.log(`Word ${wordObject.word} posted to ${userId} DB`);
-
-    } catch (err) {
-        console.error(`Failure -> addToUsersWordsDB() -> Word ${wordObject.word} was not added to ${userId} DB`);
-        console.error(err.message);
+        }
     }
 }
-
-//TODO pulling user data as a middleware and working with that from there?
-// User.findOneAndUpdate({_id}, {$set: userObj}, /* ... */) and if they are not there, then they should create an entry
 
 module.exports = router;
 

@@ -7,6 +7,7 @@ const body_parser = require('body-parser');
 const mongoose = require('mongoose');
 const engRoutes = require('./routes/eng');
 const estRoutes = require('./routes/est');
+const userRoutes = require('./routes/user');
 
 
 const server = express();
@@ -31,6 +32,7 @@ server.use(morgan('tiny'));
 server.use(cors());
 server.use('/eng', engRoutes);
 server.use('/est', estRoutes);
+server.use('/user', userRoutes);
 
 
 mongoose.connect(process.env.DB_CONNECTION_STRING, { useUnifiedTopology: true, useNewUrlParser: true });

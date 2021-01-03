@@ -1,23 +1,32 @@
 const mongoose = require('mongoose');
 
 const userModel = mongoose.Schema({
-    userId: {
+    user_id: {
         type: Number,
         required: true,
         unique: true
     },
+
+    first_name: {
+        type: String,
+        required: true
+    },
+    last_name: {
+        type: String,
+        required: true
+    },
     words: [
         {
-            wordId: {
+            word_id: {
                 type: Number,
                 required: true
             },
             lang: {
-                type: [String],
+                type: String,
                 required: true
             },
             word: {
-                type: [String],
+                type: String,
                 required: true
             },
             score: {
