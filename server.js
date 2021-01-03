@@ -11,7 +11,7 @@ const estRoutes = require('./routes/est');
 
 const server = express();
 
-
+//TODO use API Key instead
 // -- Auth
 // const basicAuth = require('express-basic-auth')
 // server.use(basicAuth({
