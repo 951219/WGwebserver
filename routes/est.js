@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/estWord');
+const UserModel = require('../models/userModel');
 
 router.get('/get/:word', getWord, (req, res) => {
     res.status(200).json(res.word);
@@ -104,6 +105,7 @@ async function postWordToDB(wordObject) {
         console.log(`Word ${postingWord.word} posted to DB`);
 
     } catch (err) {
+        console.error(err.message);
         console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB`);
     }
 }
@@ -144,6 +146,35 @@ async function getWord(req, res, next) {
     }
     next();
 }
+async function addToUsersWordsDB(wordObject, userId) {
+    //TODO check if there is already an entry for that user, if there is, then only modify the entry and do not add a new entry
+    wordObject = wordObject[0];
+    const entry = new UserModel({
+        userId: userId,
+        words: [
+            {
+                wordId: wordObject.wordId,
+                lang: 'est',
+                word: wordObject.word,
+                score: 0
+            }
+
+        ]
+
+    });
+
+    try {
+        await entry.save();
+        console.log(`Word ${wordObject.word} posted to ${userId} DB`);
+
+    } catch (err) {
+        console.error(`Failure -> addToUsersWordsDB() -> Word ${wordObject.word} was not added to ${userId} DB`);
+        console.error(err.message);
+    }
+}
+
+//TODO pulling user data as a middleware and working with that from there?
+// User.findOneAndUpdate({_id}, {$set: userObj}, /* ... */) and if they are not there, then they should create an entry
 
 module.exports = router;
 
