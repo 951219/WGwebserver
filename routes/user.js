@@ -24,13 +24,13 @@ router.get('/create/:firstname/:lastname/:number', async (req, res) => {
 });
 
 
-router.get('/getinfo/:id', async (req, res) => {
-    let id = req.params.id;
+router.get('/getinfo/:userid', async (req, res) => {
+    let id = req.params.userid;
     let data = await UserModel.findOne({
         user_id: id
     })
 
-    if (data.length !== 0) {
+    if (data !== null) {
         res.json(data);
     } else {
         res.json({ message: `User with id ${id} not found` });

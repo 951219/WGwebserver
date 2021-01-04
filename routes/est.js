@@ -20,7 +20,11 @@ router.get('/getall/', async (req, res) => {
     res.status(200).json(words);
 });
 
-//TODO bundle for 1 round of guessing
+//TODO bundle for 1 round of guessing, pulling from the users Word db
+router.get('/getuserwords/:userid', getUserData, async (req, res) => {
+    let words = await getUserWordObjects(res.user);
+    res.status(200).json(res.user);
+});
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
 async function searchEkilexForAWord(queryWord) {
@@ -184,6 +188,26 @@ async function addToUserDictionary(wordObject, userId) {
             }
         }
     }
+}
+async function getUserData(req, res, next) {
+    let id = req.params.userid;
+    try {
+        let user = await UserModel.findOne({
+            user_id: id
+        });
+        if (user !== null) {
+            res.user = user;
+        } else {
+            res.json({ message: `User with id ${id} not found` });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+    next();
+}
+
+async function getUserWordObjects(user) {
+    //TODO return 10 random word objects from user DB
 }
 
 module.exports = router;
