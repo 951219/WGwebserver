@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "devStart": "nodemon server.js"
+    "devStart": "nodemon server.js",
+    "devStart2": "nodemon auth.js"
   },
   "nodemonConfig": {
     "ignore": [
@@ -16,11 +17,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "diskdb": "^0.1.17",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.15",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.1",
