@@ -3,27 +3,29 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
 
-router.get('/get/:word', getWord, (req, res) => {
+router.get('/get/:word', authorizeUser, getWord, (req, res) => {
+    addToUserDictionary(res.word, req.user.name);
     res.status(200).json(res.word);
 });
 
-// getting random amount from mongo TODO: might return duplicates
-router.get('/random/:number', async (req, res) => {
+//TODO: getting number of random entries from mongo, might contain duplicates
+router.get('/random/:number', authorizeUser, async (req, res) => {
     var howmany = parseInt(req.params.number);
     let word = await Word.aggregate([{ $sample: { size: howmany } }]);
     res.status(200).json(word);
 })
 
-router.get('/getall/', async (req, res) => {
+router.get('/getall/', authorizeUser, async (req, res) => {
     let words = await Word.find();
     res.status(200).json(words);
 });
 
 //TODO bundle for 1 round of guessing, pulling from the users Word db
-router.get('/getuserwords/:userid', getUserData, async (req, res) => {
-    let words = await getUserWordObjects(res.user);
-    res.status(200).json(res.user);
+router.get('/getuserwords/', authorizeUser, async (req, res) => {
+    let words = await getUserWordObjects(req.user.name);
+    res.status(200).json(words);
 });
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
@@ -151,18 +153,11 @@ async function getWord(req, res, next) {
     next();
 }
 
-
-// TODO works but needs some love
-router.get('/test/get/:word', getWord, (req, res) => {
-    addToUserDictionary(res.word, 2);
-    res.status(200).json(res.word);
-});
-
-async function addToUserDictionary(wordObject, userId) {
+async function addToUserDictionary(wordObject, username) {
     wordObject = wordObject[0];
     //1. get that user since you can only add, if you have an account
     let user = await UserModel.findOne({
-        user_id: userId
+        username: username
     });
 
     if (user !== null) {
@@ -189,25 +184,24 @@ async function addToUserDictionary(wordObject, userId) {
         }
     }
 }
-async function getUserData(req, res, next) {
-    let id = req.params.userid;
-    try {
-        let user = await UserModel.findOne({
-            user_id: id
-        });
-        if (user !== null) {
-            res.user = user;
-        } else {
-            res.json({ message: `User with id ${id} not found` });
-        }
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-    next();
-}
 
 async function getUserWordObjects(user) {
     //TODO return 10 random word objects from user DB
+}
+
+// Authorizing user, making sure that they are allowed to see that information
+function authorizeUser(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    console.log(authHeader);
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) { return res.sendStatus(403); }
+        console.log(`User ${user.name} authorized`);
+        req.user = user;
+        next();
+    })
 }
 
 module.exports = router;

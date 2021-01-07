@@ -1,42 +1,89 @@
 const express = require('express');
 const router = express.Router();
 const UserModel = require('../models/userModel');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
-//TODO rafactor, current solution is for testing only
-router.get('/create/:firstname/:lastname/:number', async (req, res) => {
-    let firstname = req.params.firstname;
-    let lastname = req.params.lastname;
-    let userid = req.params.number;
+//Sign up
+router.get('/signup', (req, res) => {
+    // TODO HTML form to fill so the user could sign up
+    res.json('HTML form to fill so the user could sign up')
+})
 
-    const entry = UserModel({
-        user_id: userid,
-        first_name: firstname,
-        last_name: lastname
-    });
+//Sign up
+router.post('/signup', async (req, res) => {
+    let username = req.body.username;
+    let pw_plain = req.body.password;
+    let userid = crypto.randomBytes(20).toString('hex');
 
     try {
-        await entry.save();
-        res.json({ message: `User ${firstname} ${lastname} created, ID: ${userid}` });
-
+        const hashedPassword = await bcrypt.hash(pw_plain, 10);
+        const user = UserModel({
+            user_id: userid,
+            username: username,
+            pw_hash: hashedPassword
+        });
+        await user.save();
+        res.status(201).json({ message: `User ${username} created, ID: ${userid}` });
     } catch (err) {
-        res.json(err.message)
+        res.status(500).json(err.message);
     }
 });
 
 
-router.get('/getinfo/:userid', async (req, res) => {
-    let id = req.params.userid;
-    let data = await UserModel.findOne({
-        user_id: id
-    })
+//Sign IN
+router.post('/login', async (req, res) => {
+    let username = req.body.username;
+    let pw_plain = req.body.password;
 
-    if (data !== null) {
-        res.json(data);
-    } else {
-        res.json({ message: `User with id ${id} not found` });
+    const user = await UserModel.findOne({
+        username: username
+    })
+    console.log(user);
+
+    if (user == null) {
+        return res.status(400).json({ message: 'Cannot find user' });
+    }
+
+    try {
+        if (await bcrypt.compare(pw_plain, user.pw_hash)) {
+            const user = { name: username };
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+            res.json({ accessToken: accessToken });
+        } else {
+            res.json({ message: 'Not allowed' });
+        }
+    } catch {
+        res.status(500).send();
+    }
+});
+
+router.get('/getinfo', authorizeUser, async (req, res) => {
+    try {
+        const user = await UserModel.findOne({
+            username: req.user.name
+        })
+        res.status(200).json(user);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
     }
 })
 
-//TODO pulling user data as a middleware and working with that from there?
+//TODO DUPLICATE - this method is in user.js and in est.js
+function authorizeUser(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    console.log(authHeader);
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) { return res.sendStatus(403); }
+        console.log(`User ${user.name} authorized`);
+        req.user = user;
+        next();
+    })
+}
 
 module.exports = router;
