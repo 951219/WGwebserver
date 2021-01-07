@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const userModel = mongoose.Schema({
     user_id: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
-
-    first_name: {
+    username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
-    last_name: {
+    pw_hash: {
         type: String,
         required: true
     },

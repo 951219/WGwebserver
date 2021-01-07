@@ -36,7 +36,7 @@ server.listen(process.env.PORT, () => {
 }
 );
 
-server.get("/", authenticateToken, (req, res) => {
+server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -51,8 +51,8 @@ server.post('/login', (req, res) => {
 
 })
 
-
-function authenticateToken(req, res, next) {
+// Authorizing user, making sure that they are allowed to see that information
+function authorizeUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) return res.sendStatus(401);
