@@ -3,6 +3,7 @@ const router = express.Router();
 const UserModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 //Sign up
 router.get('/signup', (req, res) => {
@@ -47,28 +48,42 @@ router.post('/login', async (req, res) => {
 
     try {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
-            res.json({ message: 'Success' });
+            const user = { name: username };
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+            res.json({ accessToken: accessToken });
         } else {
-            res.send({ message: 'Not allowed' });
+            res.json({ message: 'Not allowed' });
         }
     } catch {
         res.status(500).send();
     }
+});
+
+router.get('/getinfo', authorizeUser, async (req, res) => {
+    try {
+        const user = await UserModel.findOne({
+            username: req.user.name
+        })
+        res.status(200).json(user);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 })
 
-// router.get('/getinfo/:userid', async (req, res) => {
-//     let id = req.params.userid;
-//     let data = await UserModel.findOne({
-//         user_id: id
-//     })
+//TODO DUPLICATE - this method is in user.js and in est.js
+function authorizeUser(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    console.log(authHeader);
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
 
-//     if (data !== null) {
-//         res.json(data);
-//     } else {
-//         res.json({ message: `User with id ${id} not found` });
-//     }
-// })
-
-//TODO pulling user data as a middleware and working with that from there?
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) { return res.sendStatus(403); }
+        console.log(`User ${user.name} authorized`);
+        req.user = user;
+        next();
+    })
+}
 
 module.exports = router;

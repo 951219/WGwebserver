@@ -3,8 +3,8 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/engWord');
 
-
-//WORDNIK
+//TODO authorization should be added
+//TODO posttouserDB() if it is not there yet, same as in est.js
 
 //Get by word from Wordnik
 router.get('/getbyword/:word', async (req, res) => {
@@ -77,16 +77,6 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 })
-
-
-// router.delete("/:id", getWord, async (req, res) => {
-//     try {
-//         await res.word.remove();
-//         res.json({ message: "Word deleted" })
-//     } catch (err) {
-//         res.status(500).json({ message: err.message });
-//     }
-// });
 
 
 //Functions 
