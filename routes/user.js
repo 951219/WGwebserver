@@ -71,7 +71,6 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
     }
 })
 
-//TODO DUPLICATE - this method is in user.js and in est.js
 function authorizeUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     console.log(authHeader);
@@ -86,4 +85,7 @@ function authorizeUser(req, res, next) {
     })
 }
 
-module.exports = router;
+module.exports = {
+    router: router,
+    authorizeUser: authorizeUser
+};

@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/engWord');
+const authorizeUser = require('./user').authorizeUser;
 
-//TODO authorization should be added
+
 //TODO posttouserDB() if it is not there yet, same as in est.js
 
 //Get by word from Wordnik
-router.get('/getbyword/:word', async (req, res) => {
+router.get('/getbyword/:word', authorizeUser, async (req, res) => {
     const url = `https://api.wordnik.com/v4/word.json/${req.params.word}/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key=${process.env.WORDNIK_API_KEY}`;
     const fetch_response = await fetch(url);
     const json = await fetch_response.json();
@@ -17,7 +18,7 @@ router.get('/getbyword/:word', async (req, res) => {
 });
 
 //Get specified amount of random words from Wordnik
-router.get('/random/:howmany', async (req, res) => {
+router.get('/random/:howmany', authorizeUser, async (req, res) => {
     var number = req.params.howmany;
     if (number == 0) number = 1;
     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=${number}&api_key=${process.env.WORDNIK_API_KEY}`
@@ -28,7 +29,7 @@ router.get('/random/:howmany', async (req, res) => {
 });
 
 //Get 1 random from Wordnik
-router.get('/random', async (req, res) => {
+router.get('/random', authorizeUser, async (req, res) => {
     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=${process.env.WORDNIK_API_KEY}`
     const fetch_response = await fetch(url);
     const json = await fetch_response.json();
@@ -40,7 +41,7 @@ router.get('/random', async (req, res) => {
 
 
 //Post to mongo 
-router.post('/', async (req, res) => {
+router.post('/', authorizeUser, async (req, res) => {
     const response = await postWord(req.body);
     if (response.added = true) {
         res.status(201).json(response.message);
@@ -49,13 +50,13 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.get("/:id", getWord, async (req, res) => {
+router.get("/:id", authorizeUser, getWord, async (req, res) => {
     res.json(res.word);
 });
 
 
 //Only for updating score
-router.patch("/:id", getWord, async (req, res) => {
+router.patch("/:id", authorizeUser, getWord, async (req, res) => {
     if (req.body.score != null) {
         res.word.score = req.body.score
     }
@@ -69,7 +70,7 @@ router.patch("/:id", getWord, async (req, res) => {
 })
 
 // get all from Mongo
-router.get('/', async (req, res) => {
+router.get('/', authorizeUser, async (req, res) => {
     try {
         const words = await Word.find();
         res.send(words);
@@ -82,6 +83,7 @@ router.get('/', async (req, res) => {
 //Functions 
 async function getWord(req, res, next) {
     // TODO use the same approach as in est endpoint. id db has it, it will return from there, if not, then it will pull it from wordnkik
+    // TODO create a word object with an id, examples, definitions and a date
     let word;
     try {
         word = await Word.findById(req.params.id);

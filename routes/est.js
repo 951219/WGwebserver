@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
-const jwt = require('jsonwebtoken');
+const authorizeUser = require('./user').authorizeUser;
 
 router.get('/get/:word', authorizeUser, getWord, (req, res) => {
     addToUserDictionary(res.word, req.user.name);
@@ -187,21 +187,6 @@ async function addToUserDictionary(wordObject, username) {
 
 async function getUserWordObjects(user) {
     //TODO return 10 random word objects from user DB
-}
-
-// Authorizing user, making sure that they are allowed to see that information
-function authorizeUser(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    console.log(authHeader);
-    const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) { return res.sendStatus(403); }
-        console.log(`User ${user.name} authorized`);
-        req.user = user;
-        next();
-    })
 }
 
 module.exports = router;
