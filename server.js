@@ -38,3 +38,6 @@ server.listen(process.env.PORT, () => {
 server.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
+
+
+//TODO getEndpoints route
