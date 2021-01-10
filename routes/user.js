@@ -37,10 +37,15 @@ router.post('/login', async (req, res) => {
     let username = req.body.username;
     let pw_plain = req.body.password;
 
+    if (!username || !pw_plain) {
+        return res.status(400).json({
+            message: 'Please fill out all fields'
+        });
+    }
+
     const user = await UserModel.findOne({
         username: username
     })
-    console.log(user);
 
     if (user == null) {
         return res.status(400).json({ message: 'Cannot find user' });

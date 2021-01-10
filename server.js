@@ -15,6 +15,7 @@ const server = express();
 server.use(body_parser.json());
 server.use(morgan('tiny'));
 server.use(cors());
+server.use(express.urlencoded({ extended: false }));
 server.use('/eng', engRoutes);
 server.use('/est', estRoutes);
 server.use('/user', userRoutes);

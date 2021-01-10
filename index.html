@@ -4,20 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Webserver</title>
-    <script>
-      document.getElementById("btn").addEventListener("click", function () {
-        var pw = document.getElementById("password");
-        var uname = document.getElementById("username");
-
-        await fetch("/user/login",{
-            method: POST,
-            mode: "cors",
-            body:{username: uname, password:pw}
-        })
-      });
-    </script>
   </head>
-  <!-- TODO -->
   <body>
     <div style="width: 100%">
       <div style="height: 100px; float: left">
@@ -38,14 +25,18 @@
           >https://github.com/951219/WGapp</a
         ><br />
         <br /><br />
-        <form>
-          <label for="fname"> Username:</label>
-          <input type="text" id="username" name="username" /><br /><br />
-
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" /><br /><br />
-          <button id="btn">Log in</button>
+        <form action="/user/login" method="POST">
+          <div>
+            <label for="username">Username</label>
+            <input type="username" id="username" name="username" required />
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button type="submit">Login</button>
         </form>
+        <a href="/register">Register</a>
 
         <br />
         History:<br />
