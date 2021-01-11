@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserModel = require('../models/userModel');
+const RefreshTokenModel = require('../models/refreshToken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
@@ -27,7 +28,8 @@ router.post('/signup', async (req, res) => {
         await user.save();
         res.status(201).json({ message: `User ${username} created, ID: ${userid}` });
     } catch (err) {
-        res.status(500).json(err.message);
+        console.log(err.message);
+        res.status(500);
     }
 });
 
@@ -54,14 +56,33 @@ router.post('/login', async (req, res) => {
     try {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
             const user = { name: username };
-            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-            res.json({ accessToken: accessToken });
+            const accessToken = generateAccessToken(user)
+            // jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+            const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+            const tokenToSave = await RefreshTokenModel({
+                token: refreshToken
+            })
+            await tokenToSave.save();
+            res.json({ accessToken: accessToken, refreshToken: refreshToken });
         } else {
             res.json({ message: 'Not allowed' });
         }
-    } catch {
-        res.status(500).send();
+    } catch (err) {
+        res.status(500).send(err.message);
     }
+});
+
+// Deleting the refreshtoken/loggin out, so the customer has to generate a new one once they log in again.
+router.delete('/logout', async (req, res) => {
+    try {
+        await RefreshTokenModel.deleteOne({
+            token: req.body.token
+        });
+    } catch (err) {
+        console.log(err.message);
+        res.sendStatus(500);
+    }
+    res.sendStatus(204);
 });
 
 router.get('/getinfo', authorizeUser, async (req, res) => {
@@ -74,8 +95,26 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
     catch (err) {
         res.status(500).json({ message: err.message })
     }
-})
+});
 
+//Endpoint for creating a new access token
+router.post('/token', async (req, res) => {
+    const refreshToken = req.body.token;
+    if (refreshToken == null) { return res.sendStatus(401); };
+    let tokenFromDB = await RefreshTokenModel.findOne({ token: refreshToken });
+    if (tokenFromDB == null) { return res.sendStatus(403); };
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            console.log(err.message);
+            return res.sendStatus(403);
+        }
+        const accessToken = generateAccessToken({ name: user.name });
+        res.json({ accessToken: accessToken });
+
+    });
+
+
+});
 function authorizeUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -89,7 +128,9 @@ function authorizeUser(req, res, next) {
     })
 }
 
-//TODO revoking access from an user, refreshtokens
+function generateAccessToken(user) {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' });
+}
 
 module.exports = {
     router: router,
