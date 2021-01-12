@@ -3,54 +3,55 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/engWord');
 const authorizeUser = require('./user').authorizeUser;
+const crypto = require('crypto');
 
 
 //TODO posttouserDB() if it is not there yet, same as in est.js
 
 //Get by word from Wordnik
-router.get('/getbyword/:word', authorizeUser, async (req, res) => {
-    const url = `https://api.wordnik.com/v4/word.json/${req.params.word}/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key=${process.env.WORDNIK_API_KEY}`;
-    const fetch_response = await fetch(url);
-    const json = await fetch_response.json();
-    res.json(json);
-    //TODO filter out unnecessary information(1st element for example)
-    //TODO check against my own db, if present, send from my db instead of wordnik
-});
+// router.get('/getbyword/:word', authorizeUser, async (req, res) => {
+//     const url = `https://api.wordnik.com/v4/word.json/${req.params.word}/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key=${process.env.WORDNIK_API_KEY}`;
+//     const fetch_response = await fetch(url);
+//     const json = await fetch_response.json();
+//     res.json(json);
+//     //TODO filter out unnecessary information(1st element for example)
+//     //TODO check against my own db, if present, send from my db instead of wordnik
+// });
 
 //Get specified amount of random words from Wordnik
-router.get('/random/:howmany', authorizeUser, async (req, res) => {
-    var number = req.params.howmany;
-    if (number == 0) number = 1;
-    const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=${number}&api_key=${process.env.WORDNIK_API_KEY}`
-    const fetch_response = await fetch(url);
-    const json = await fetch_response.json();
-    res.json(json);
+// router.get('/random/:howmany', authorizeUser, async (req, res) => {
+//     var number = req.params.howmany;
+//     if (number == 0) number = 1;
+//     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=${number}&api_key=${process.env.WORDNIK_API_KEY}`
+//     const fetch_response = await fetch(url);
+//     const json = await fetch_response.json();
+//     res.json(json);
 
-});
+// });
 
 //Get 1 random from Wordnik
-router.get('/random', authorizeUser, async (req, res) => {
-    const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=${process.env.WORDNIK_API_KEY}`
-    const fetch_response = await fetch(url);
-    const json = await fetch_response.json();
-    res.json(json);
+// router.get('/random', authorizeUser, async (req, res) => {
+//     const url = `https://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=${process.env.WORDNIK_API_KEY}`
+//     const fetch_response = await fetch(url);
+//     const json = await fetch_response.json();
+//     res.json(json);
 
-});
+// });
 
 // #############################
 
 
 //Post to mongo 
-router.post('/', authorizeUser, async (req, res) => {
-    const response = await postWord(req.body);
-    if (response.added = true) {
-        res.status(201).json(response.message);
-    } else {
-        res.status(400).json(response.message);
-    }
-});
+// router.post('/', authorizeUser, async (req, res) => {
+//     const response = await postWord(req.body);
+//     if (response.added = true) {
+//         res.status(201).json(response.message);
+//     } else {
+//         res.status(400).json(response.message);
+//     }
+// });
 
-router.get("/:id", authorizeUser, getWord, async (req, res) => {
+router.get("/:word", getWord, async (req, res) => {
     res.json(res.word);
 });
 
@@ -82,43 +83,109 @@ router.get('/', authorizeUser, async (req, res) => {
 
 //Functions 
 async function getWord(req, res, next) {
-    // TODO use the same approach as in est endpoint. id db has it, it will return from there, if not, then it will pull it from wordnkik
-    // TODO create a word object with an id, examples, definitions and a date
-    let word;
+    let requestedWord = req.params.word;
+    let responseWord;
     try {
-        word = await Word.findById(req.params.id);
-        if (word == null) {
-            return res.status(404).json({ message: "Cannot find the word" });
+        responseWord = await Word.find({
+            word: requestedWord
+        });
+        if (responseWord.length == 0) {
+            console.log(`Cannot find the word ${requestedWord} from ENG DB`);
+            let owlbotWord = await searchOwlbotForAWord(requestedWord);
+
+            let completedWord = await createAWordFromOwlbotData(owlbotWord);
+            await postWordToDB(completedWord);
+
+            console.log('checking fromm db again');
+            try {
+                completedWord = await Word.find({
+                    word: requestedWord
+                });
+            } catch (err) {
+                return res.status(500).json({ message: err.message });
+            }
+            res.word = completedWord;
+
+        } else {
+            console.log(`Found the word ${req.params.word} from DB and returning it`);
+            res.word = responseWord;
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
-    res.word = word;
     next();
 }
 
-async function postWord(data) {
+async function searchOwlbotForAWord(queryWord) {
+    console.log(`Querying owlbot for word ${queryWord}`);
+    const url = `https://owlbot.info/api/v4/dictionary/${encodeURI(queryWord)}`;
+
+    try {
+        const fetch_response = await fetch(url, { method: 'GET', headers: { 'Authorization': `Token ${process.env.OWLBOT_API_KEY}` } }).catch((err) => {
+            return {
+                message: `No such word found: ${queryWord}`,
+                error: err.message
+            }
+        });
+        const json = await fetch_response.json();
+
+        if (json.hasOwnProperty('word')) {
+            console.log(`Success -> searchOwlbotForAWord() -> found the word ${queryWord}`);
+            return json;
+
+        } else {
+            console.error(`Failure -> searchOwlbotForAWord() -> No word returned for ${queryWord}`);
+            return { message: `No such word found: ${queryWord}` }
+        }
+    } catch (err) {
+        return { message: err.message };
+    }
+
+}
+
+async function createAWordFromOwlbotData(data) {
+    let word = data.word;
+    let definitions = [];
+    let examples = [];
+
+    data.definitions.forEach(element => {
+        if (element.definition != null) {
+            if (!definitions.includes(element.definition)) {
+                definitions.push(element.definition);
+            }
+        }
+
+        if (element.example != null) {
+            if (!examples.includes(element.example)) {
+                examples.push(element.example);
+            }
+        }
+    })
+    return { word, definitions, examples };
+}
+
+async function postWordToDB(data) {
+    let id = crypto.randomBytes(16).toString('hex');
     const newWord = new Word({
         word: data.word,
-        definition: data.definition,
-        example: data.example,
-        score: data.score
+        meaning: data.definitions,
+        example: data.examples,
+        timeAdded: Date.now(),
+        wordId: id
+
     });
 
     try {
         const postingWord = await newWord.save();
-        console.log(postingWord);
+        console.log(`Word ${postingWord.word} posted to DB`)
         return {
             added: true,
             message: postingWord
         };
     } catch (err) {
-        return {
-            added: false,
-            message: err.message
-        };
+        console.error(err.message);
+        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB`);
     }
 }
-
 
 module.exports = router;

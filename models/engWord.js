@@ -3,17 +3,23 @@ const mongoose = require('mongoose');
 const engWordSchema = new mongoose.Schema({
     word: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
-    definition: {
+    meaning: {
         type: [String],
         required: true
     },
     example: [String],
-    score: {
+    timeAdded: {
+        type: Date,
+        required: true,
+    },
+    wordId: {
         type: String,
-        default: "0"
+        required: true,
+        unique: true
     }
 })
 
-module.exports = mongoose.model('eng', engWordSchema);
+module.exports = mongoose.model('engWord', engWordSchema);
