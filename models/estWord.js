@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const newEstWordSchema = new mongoose.Schema({
     word: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     meaning: {
         type: [String],
@@ -16,7 +17,8 @@ const newEstWordSchema = new mongoose.Schema({
     },
     wordId: {
         type: Number,
-        required: true
+        required: true,
+        unique: true
     }
 })
 
