@@ -128,11 +128,8 @@ async function searchOwlbotForAWord(queryWord) {
             }
         });
 
-        console.log('got past the fetch');
         const json = await fetch_response.json();
-        console.log('got past the response.json');
-        console.log(json['word']);
-        console.log(json.hasOwnProperty('word'));
+
         if (json.hasOwnProperty('word')) {
             console.log(`Success -> searchOwlbotForAWord() -> found the word ${queryWord}`);
             return json;
