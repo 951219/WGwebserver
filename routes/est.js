@@ -5,7 +5,7 @@ const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
 const authorizeUser = require('./user').authorizeUser;
 
-router.get('/get/:word', authorizeUser, getWord, (req, res) => {
+router.get('/get/:word', getWord, (req, res) => {
     addToUserDictionary(res.word, req.user.name);
     res.status(200).json(res.word);
 });
@@ -109,10 +109,8 @@ async function postWordToDB(wordObject) {
     try {
         const postingWord = await newWord.save();
         console.log(`Word ${postingWord.word} posted to DB`);
-
     } catch (err) {
-        console.error(err.message);
-        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB`);
+        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
     }
 }
 async function getWord(req, res, next) {
@@ -130,16 +128,15 @@ async function getWord(req, res, next) {
                 let completedWord = await createAWordFromEkilexData(data);
                 await postWordToDB(completedWord);
 
-                console.log('checking fromm db again');
-                //TODO method for checking from DB try/catch
                 try {
+                    console.log('checking from db again');
                     completedWord = await Word.find({
                         word: requestedWord
                     });
+                    res.word = completedWord;
                 } catch (err) {
                     return res.status(500).json({ message: err.message });
                 }
-                res.word = completedWord;
             } else {
                 return res.status(500).json({ message: ekilexWord.message });
             }

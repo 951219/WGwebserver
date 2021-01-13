@@ -86,25 +86,30 @@ async function getWord(req, res, next) {
     let requestedWord = req.params.word;
     let responseWord;
     try {
-        responseWord = await Word.find({
+        responseWord = await Word.findOne({
             word: requestedWord
         });
-        if (responseWord.length == 0) {
+        if (responseWord == null) {
             console.log(`Cannot find the word ${requestedWord} from ENG DB`);
             let owlbotWord = await searchOwlbotForAWord(requestedWord);
+            if (!owlbotWord.hasOwnProperty('message')) {
+                let completedWord = await createAWordFromOwlbotData(owlbotWord);
+                await postWordToDB(completedWord);
 
-            let completedWord = await createAWordFromOwlbotData(owlbotWord);
-            await postWordToDB(completedWord);
+                try {
+                    console.log('checking from db again');
+                    completedWord = await Word.find({
+                        word: requestedWord
+                    });
 
-            console.log('checking fromm db again');
-            try {
-                completedWord = await Word.find({
-                    word: requestedWord
-                });
-            } catch (err) {
-                return res.status(500).json({ message: err.message });
+                    res.word = completedWord;
+                } catch (err) {
+                    return res.status(500).json({ message: err.message });
+                }
+            } else {
+                return res.status(500).json({ message: `no word found for ${requestedWord}` })
             }
-            res.word = completedWord;
+
 
         } else {
             console.log(`Found the word ${req.params.word} from DB and returning it`);
@@ -180,13 +185,8 @@ async function postWordToDB(data) {
     try {
         const postingWord = await newWord.save();
         console.log(`Word ${postingWord.word} posted to DB`)
-        return {
-            added: true,
-            message: postingWord
-        };
     } catch (err) {
-        console.error(err.message);
-        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB`);
+        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
     }
 }
 
