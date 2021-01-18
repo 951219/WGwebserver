@@ -4,8 +4,9 @@ const fetch = require('node-fetch');
 const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
 const authorizeUser = require('./user').authorizeUser;
+const getUserInfo = require('./user').getUserInfo;
 
-router.get('/get/:word', getWord, (req, res) => {
+router.get('/get/:word', authorizeUser, getWord, (req, res) => {
     addToUserDictionary(res.word, req.user.name);
     res.status(200).json(res.word);
 });
@@ -22,9 +23,10 @@ router.get('/getall/', authorizeUser, async (req, res) => {
     res.status(200).json(words);
 });
 
-//TODO bundle for 1 round of guessing, pulling from the users Word db
+//TODO broken - bundle for 1 round of guessing, pulling from the users Word db
 router.get('/getuserwords/', authorizeUser, async (req, res) => {
-    let words = await getUserWordObjects(req.user.name);
+    let userData = await getUserInfo(req.user.name);
+    let words = await getUserWordObjects(userData);
     res.status(200).json(words);
 });
 
@@ -56,19 +58,18 @@ async function searchEkilexForAWord(queryWord) {
 }
 
 // 2. Getting the definitions by word id - https://ekilex.eki.ee/api/word/details/{wordID}
-async function getWordDetails(word) {
-    const url = `https://ekilex.eki.ee/api/word/details/${word["words"][0]["wordId"]}`;
+async function getWordDetailsByWordId(wordId) {
+    let url = `https://ekilex.eki.ee/api/word/details/${wordId}`;
 
-    let wordDetails;
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } });
         const json = await fetch_response.json();
-        wordDetails = json;
-        console.log(`Success -> getWordDetails() -> got the word details from ekilex`);
+        console.log(`Success -> getWordDetailsByWordId() -> got the word details from ekilex for ID ${wordId}`);
+        return json;
     } catch (err) {
         return { message: err.message };
     }
-    return wordDetails;
+
 }
 // 3. Create a word from word Details
 async function createAWordFromEkilexData(wordDetails) {
@@ -124,7 +125,9 @@ async function getWord(req, res, next) {
             console.log(`Cannot find the word ${requestedWord} from DB`);
             let ekilexWord = await searchEkilexForAWord(requestedWord);
             if (ekilexWord['words']) {
-                let data = await getWordDetails(ekilexWord);
+                let wordId = ekilexWord["words"][0]["wordId"];
+                //before this wordid part was in getWordDetailsByWordId()
+                let data = await getWordDetailsByWordId(wordId);
                 let completedWord = await createAWordFromEkilexData(data);
                 await postWordToDB(completedWord);
 
@@ -182,9 +185,18 @@ async function addToUserDictionary(wordObject, username) {
     }
 }
 
-async function getUserWordObjects(user) {
-    //TODO return 10 random word objects from user DB
-}
+// async function getUserWordObjects(userObject) {
+//     //TODO broken. return 10 random word objects from user DB
+//     let words = userObject.words;
+
+//     let list = words.forEach(async (element) => {
+//         let worddetails = await getWordDetailsByWordId(element.word_id);
+//         let word = await createAWordFromEkilexData(worddetails);
+//         return word;
+//     })
+//     console.log(list);
+//     return list;
+// }
 
 module.exports = router;
 
