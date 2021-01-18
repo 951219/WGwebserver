@@ -5,6 +5,13 @@ const RefreshTokenModel = require('../models/refreshToken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const pino = require('pino')
+const logger = pino({
+    prettyPrint: {
+        levelFirst: true
+    },
+    prettifier: require('pino-pretty')
+})
 
 //Sign up
 router.get('/signup', (req, res) => {
@@ -50,14 +57,15 @@ router.post('/login', async (req, res) => {
     })
 
     if (user == null) {
-        return res.status(400).json({ message: 'Cannot find user' });
+        let message = `Cannot find user ${username}`;
+        logger.warn(message);
+        return res.status(400).json({ message });
     }
 
     try {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
             const user = { name: username };
             const accessToken = generateAccessToken(user)
-            // jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
             const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
             const tokenToSave = await RefreshTokenModel({
                 token: refreshToken
@@ -65,9 +73,12 @@ router.post('/login', async (req, res) => {
             await tokenToSave.save();
             res.json({ accessToken: accessToken, refreshToken: refreshToken });
         } else {
-            res.json({ message: 'Not allowed' });
+            let message = `User ${username} is not allowed here`;
+            logger.warn(message);
+            res.json({ message });
         }
     } catch (err) {
+        logger.error(err.message);
         res.status(500).send(err.message);
     }
 });
@@ -79,8 +90,8 @@ router.delete('/logout', async (req, res) => {
             token: req.body.token
         });
     } catch (err) {
-        console.log(err.message);
-        res.sendStatus(500);
+        logger.warn(err.message);
+        res.status(500).json(err.message);
     }
     res.sendStatus(204);
 });
@@ -122,13 +133,14 @@ function authorizeUser(req, res, next) {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) { return res.sendStatus(403); }
-        console.log(`User "${user.name}" authorized`);
+        logger.info(`User "${user.name}" authorized`);
         req.user = user;
         next();
     })
 }
 
 function generateAccessToken(user) {
+    logger.info(`${user.name} logged in`)
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
 }
 

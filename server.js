@@ -13,7 +13,7 @@ const userRoutes = require('./routes/user').router;
 const server = express();
 
 server.use(body_parser.json());
-server.use(morgan('tiny'));
+server.use(morgan('tiny', { options: 'immediate' }));
 server.use(cors());
 server.use(express.urlencoded({ extended: false }));
 server.use('/eng', engRoutes);
