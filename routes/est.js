@@ -6,6 +6,14 @@ const UserModel = require('../models/userModel');
 const authorizeUser = require('./user').authorizeUser;
 const getUserInfo = require('./user').getUserInfo;
 
+const logger = require('pino')({
+    prettyPrint: {
+        levelFirst: true
+    },
+    prettifier: require('pino-pretty')
+});
+
+
 router.get('/get/:word', authorizeUser, getWord, (req, res) => {
     addToUserDictionary(res.word, req.user.name);
     res.status(200).json(res.word);
@@ -32,26 +40,30 @@ router.get('/getuserwords/', authorizeUser, async (req, res) => {
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
 async function searchEkilexForAWord(queryWord) {
-    console.log(`Querying ekilex for word ${queryWord}`);
+    logger.info(`Querying ekilex for word ${queryWord}`);
     const url = `https://ekilex.eki.ee/api/word/search/${encodeURI(queryWord)}/sss`;
 
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } }).catch((err) => {
-            return {
+            let response = {
                 message: `No such word found: ${queryWord}`,
                 error: err.message
-            }
+            };
+
+            logger.warn(response);
+            return response;
         });
         const json = await fetch_response.json();
 
         if (json['totalCount'] == 0) {
-            console.error(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`)
+            logger.warn(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`)
             return { message: `No such word found: ${queryWord}` }
         } else {
-            console.log(`Success -> searchEkilexForAWord() -> total count for word ${queryWord}: ${json['totalCount']}`);
+            logger.info(`Success -> searchEkilexForAWord() -> total count for word ${queryWord}: ${json['totalCount']}`);
             return json;
         }
     } catch (err) {
+        logger.error(err.message);
         return { message: err.message };
     }
 
@@ -64,9 +76,10 @@ async function getWordDetailsByWordId(wordId) {
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } });
         const json = await fetch_response.json();
-        console.log(`Success -> getWordDetailsByWordId() -> got the word details from ekilex for ID ${wordId}`);
+        logger.info(`Success -> getWordDetailsByWordId() -> got the word details from ekilex for ID ${wordId}`);
         return json;
     } catch (err) {
+        logger.error(err.message);
         return { message: err.message };
     }
 
@@ -109,9 +122,9 @@ async function postWordToDB(wordObject) {
 
     try {
         const postingWord = await newWord.save();
-        console.log(`Word ${postingWord.word} posted to DB`);
+        logger.info(`Word ${postingWord.word} posted to DB`);
     } catch (err) {
-        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
+        logger.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
     }
 }
 async function getWord(req, res, next) {
@@ -122,7 +135,7 @@ async function getWord(req, res, next) {
             word: requestedWord
         });
         if (responseWord.length == 0) {
-            console.log(`Cannot find the word ${requestedWord} from DB`);
+            logger.info(`Cannot find the word ${requestedWord} from DB`);
             let ekilexWord = await searchEkilexForAWord(requestedWord);
             if (ekilexWord['words']) {
                 let wordId = ekilexWord["words"][0]["wordId"];
@@ -132,22 +145,25 @@ async function getWord(req, res, next) {
                 await postWordToDB(completedWord);
 
                 try {
-                    console.log('checking from db again');
+                    logger.info('checking from db again');
                     completedWord = await Word.find({
                         word: requestedWord
                     });
                     res.word = completedWord;
                 } catch (err) {
+                    logger.error(err.message);
                     return res.status(500).json({ message: err.message });
                 }
             } else {
+                logger.warn(ekilexWord.message);
                 return res.status(500).json({ message: ekilexWord.message });
             }
         } else {
-            console.log(`Found the word ${req.params.word} from DB and returning it`);
+            logger.info(`Found the word ${req.params.word} from DB and returning it`);
             res.word = responseWord;
         }
     } catch (err) {
+        logger.error(err.message);
         return res.status(500).json({ message: err.message });
     }
     next();
@@ -165,9 +181,9 @@ async function addToUserDictionary(wordObject, username) {
         let list = user.words;
         let found = list.find((element) => element.word_id == wordObject.wordId);
         if (found !== undefined) {
-            console.log('User already has this word');
+            logger.info('User already has this word');
         } else {
-            console.log('User does not have this word, adding it to db');
+            logger.info('User does not have this word, adding it to db');
             list.push({
                 word_id: wordObject.wordId,
                 lang: 'est',
@@ -179,7 +195,7 @@ async function addToUserDictionary(wordObject, username) {
                     words: list
                 });
             } catch (err) {
-                console.log(err.message);
+                logger.error(err.message);
             }
         }
     }

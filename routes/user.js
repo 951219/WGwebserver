@@ -5,13 +5,13 @@ const RefreshTokenModel = require('../models/refreshToken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const pino = require('pino')
-const logger = pino({
+
+const logger = require('pino')({
     prettyPrint: {
         levelFirst: true
     },
     prettifier: require('pino-pretty')
-})
+});
 
 //Sign up
 router.get('/signup', (req, res) => {
@@ -33,9 +33,11 @@ router.post('/signup', async (req, res) => {
             pw_hash: hashedPassword
         });
         await user.save();
-        res.status(201).json({ message: `User ${username} created, ID: ${userid}` });
+        let message = `User ${username} created, ID: ${userid}`;
+        logger.info(message);
+        res.status(201).json({ message });
     } catch (err) {
-        console.log(err.message);
+        logger.error(err.message);
         res.status(500);
     }
 });
@@ -47,9 +49,9 @@ router.post('/login', async (req, res) => {
     let pw_plain = req.body.password;
 
     if (!username || !pw_plain) {
-        return res.status(400).json({
-            message: 'Please fill out all fields'
-        });
+        let message = 'Please fill out all fields';
+        logger.warn(message);
+        return res.status(400).json({ message });
     }
 
     const user = await UserModel.findOne({
@@ -71,6 +73,7 @@ router.post('/login', async (req, res) => {
                 token: refreshToken
             })
             await tokenToSave.save();
+            logger.info(`Returning tokens for ${user.name}`)
             res.json({ accessToken: accessToken, refreshToken: refreshToken });
         } else {
             let message = `User ${username} is not allowed here`;
@@ -89,11 +92,13 @@ router.delete('/logout', async (req, res) => {
         await RefreshTokenModel.deleteOne({
             token: req.body.token
         });
+        logger.info('Logged out')
+        res.sendStatus(204);
     } catch (err) {
-        logger.warn(err.message);
-        res.status(500).json(err.message);
+        logger.error(err.message);
+        res.status(500).json({ message: err.message });
     }
-    res.sendStatus(204);
+
 });
 
 router.get('/getinfo', authorizeUser, async (req, res) => {
@@ -101,9 +106,11 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
         const user = await UserModel.findOne({
             username: req.user.name
         })
+        logger.info(`Found the user ${req.user.name}, returning it`)
         res.status(200).json(user);
     }
     catch (err) {
+        logger.error(err.message)
         res.status(500).json({ message: err.message })
     }
 });
@@ -116,10 +123,11 @@ router.post('/token', async (req, res) => {
     if (tokenFromDB == null) { return res.sendStatus(403); };
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
-            console.log(err.message);
-            return res.sendStatus(403);
+            logger.error(err.message);
+            return res.status(403).json({ message: err.message });
         }
         const accessToken = generateAccessToken({ name: user.name });
+        logger.info(`Returning new access token for ${user.name}`);
         res.json({ accessToken: accessToken });
 
     });
@@ -129,10 +137,16 @@ router.post('/token', async (req, res) => {
 function authorizeUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
+    if (token == null) {
+        logger.warn(`Token is null`)
+        return res.sendStatus(401)
+    };
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) { return res.sendStatus(403); }
+        if (err) {
+            logger.error(err.message);
+            return res.status(403).json({ message: err.message });
+        }
         logger.info(`User "${user.name}" authorized`);
         req.user = user;
         next();
@@ -140,7 +154,7 @@ function authorizeUser(req, res, next) {
 }
 
 function generateAccessToken(user) {
-    logger.info(`${user.name} logged in`)
+    logger.info(`Generating access token for ${user.name}`)
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
 }
 
@@ -149,9 +163,11 @@ async function getUserInfo(username) {
         const user = await UserModel.findOne({
             username: username
         })
+        logger.info(`Got information for ${username}, returning it`)
         return user;
     }
     catch (err) {
+        logger.error(err.message);
         return { message: err.message };
     }
 
