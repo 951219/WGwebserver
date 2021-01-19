@@ -18,6 +18,7 @@ const logger = require('pino')({
 
 const server = express();
 
+//TODO morgan configuration
 server.use(body_parser.json());
 server.use(morgan('tiny', { immediate: true }));
 server.use(cors());
