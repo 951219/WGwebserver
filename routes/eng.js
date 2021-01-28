@@ -6,6 +6,14 @@ const authorizeUser = require('./user').authorizeUser;
 const crypto = require('crypto');
 
 
+const logger = require('pino')({
+    prettyPrint: {
+        levelFirst: true
+    },
+    prettifier: require('pino-pretty')
+});
+
+
 //TODO posttouserDB() if it is not there yet, same as in est.js
 
 //Get by word from Wordnik
@@ -90,7 +98,7 @@ async function getWord(req, res, next) {
             word: requestedWord
         });
         if (responseWord == null) {
-            console.log(`Cannot find the word ${requestedWord} from ENG DB`);
+            logger.warn(`Cannot find the word ${requestedWord} from ENG DB`);
             let owlbotWord = await searchOwlbotForAWord(requestedWord);
             if (!owlbotWord.hasOwnProperty('message')) {
                 let completedWord = await createAWordFromOwlbotData(owlbotWord);
@@ -122,11 +130,12 @@ async function getWord(req, res, next) {
 }
 
 async function searchOwlbotForAWord(queryWord) {
-    console.log(`Querying owlbot for word ${queryWord}`);
+    logger.info(`Querying owlbot for word ${queryWord}`);
     const url = `https://owlbot.info/api/v4/dictionary/${encodeURI(queryWord)}`;
 
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'Authorization': `Token ${process.env.OWLBOT_API_KEY}` } }).catch((err) => {
+            logger.warn(`No such word found: ${queryWord}`);
             return {
                 message: `No such word found: ${queryWord}`,
                 error: err.message
@@ -136,15 +145,15 @@ async function searchOwlbotForAWord(queryWord) {
         const json = await fetch_response.json();
 
         if (json.hasOwnProperty('word')) {
-            console.log(`Success -> searchOwlbotForAWord() -> found the word ${queryWord}`);
+            logger.info(`Success -> searchOwlbotForAWord() -> found the word ${queryWord}`);
             return json;
 
         } else {
-            console.error(`Failure -> searchOwlbotForAWord() -> No word returned for ${queryWord}`);
+            logger.warn(`Failure -> searchOwlbotForAWord() -> No word returned for ${queryWord}`);
             return { message: `No such word found: ${queryWord}` }
         }
     } catch (err) {
-        console.error(err.message);
+        logger.error(err.message);
         return { message: err.message };
     }
 
@@ -184,9 +193,9 @@ async function postWordToDB(data) {
 
     try {
         const postingWord = await newWord.save();
-        console.log(`Word ${postingWord.word} posted to DB`)
+        logger.info(`Word ${postingWord.word} posted to DB`);
     } catch (err) {
-        console.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
+        logger.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
     }
 }
 
