@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
             })
             await tokenToSave.save();
             logger.info(`Returning tokens for ${user.name}`)
-            res.json({ accessToken: accessToken, refreshToken: refreshToken });
+            res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken });
         } else {
             let message = `User ${username} is not allowed here`;
             logger.warn(message);

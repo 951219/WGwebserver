@@ -34,8 +34,8 @@ router.get('/getall/', authorizeUser, async (req, res) => {
 //TODO broken - bundle for 1 round of guessing, pulling from the users Word db
 router.get('/getuserwords/', authorizeUser, async (req, res) => {
     let userData = await getUserInfo(req.user.name);
-    let words = await getUserWordObjects(userData);
-    res.status(200).json(words);
+    // let words = await getUserWordObjects(userData);
+    res.status(200).json({ message: "broken" });
 });
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
