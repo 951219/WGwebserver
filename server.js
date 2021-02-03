@@ -8,7 +8,6 @@ const mongoose = require('mongoose');
 const engRoutes = require('./routes/eng');
 const estRoutes = require('./routes/est');
 const userRoutes = require('./routes/user').router;
-const testingRoutes = require('./routes/testing');
 
 const logger = require('pino')({
     prettyPrint: {
@@ -27,7 +26,6 @@ server.use(express.urlencoded({ extended: false }));
 server.use('/eng', engRoutes);
 server.use('/est', estRoutes);
 server.use('/user', userRoutes);
-server.use('/testing', testingRoutes);
 
 
 mongoose.connect(process.env.DB_CONNECTION_STRING, { useUnifiedTopology: true, useNewUrlParser: true });

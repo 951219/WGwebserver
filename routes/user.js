@@ -66,12 +66,13 @@ router.post('/login', async (req, res) => {
 
     try {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
-            const user = { name: username };
-            const accessToken = generateAccessToken(user)
-            const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+            const userForTokenCreation = { name: username };
+            const accessToken = generateAccessToken(userForTokenCreation)
+            const refreshToken = jwt.sign(userForTokenCreation, process.env.REFRESH_TOKEN_SECRET)
             const tokenToSave = await RefreshTokenModel({
-                token: refreshToken
-            })
+                token: refreshToken,
+                user_id: user.user_id
+            });
             await tokenToSave.save();
             logger.info(`Returning tokens for ${user.name}`)
             res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken });
@@ -153,9 +154,9 @@ function authorizeUser(req, res, next) {
     })
 }
 
-function generateAccessToken(user) {
-    logger.info(`Generating access token for ${user.name}`)
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
+function generateAccessToken(accessTokenUser) {
+    logger.info(`Generating access token for ${accessTokenUser.name}`)
+    return jwt.sign(accessTokenUser, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
 }
 
 async function getUserInfo(username) {
