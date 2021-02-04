@@ -19,6 +19,8 @@ router.get('/signup', (req, res) => {
     res.json('HTML form to fill so the user could sign up')
 })
 
+// TODO add lifecycle for both of the tokens.
+
 //Sign up
 router.post('/signup', async (req, res) => {
     let username = req.body.username;
@@ -129,7 +131,7 @@ router.post('/token', async (req, res) => {
         }
         const accessToken = generateAccessToken({ name: user.name });
         logger.info(`Returning new access token for ${user.name}`);
-        res.json({ accessToken: accessToken });
+        res.status(200).json({ accessToken: accessToken });
 
     });
 
