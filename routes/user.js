@@ -19,7 +19,6 @@ router.get('/signup', (req, res) => {
     res.json('HTML form to fill so the user could sign up')
 })
 
-// TODO add lifecycle for both of the tokens.
 
 //Sign up
 router.post('/signup', async (req, res) => {
@@ -58,7 +57,7 @@ router.post('/login', async (req, res) => {
 
     const user = await UserModel.findOne({
         username: username
-    })
+    });
 
     if (user == null) {
         let message = `Cannot find user ${username}`;
@@ -68,12 +67,14 @@ router.post('/login', async (req, res) => {
 
     try {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
-            const userForTokenCreation = { name: username };
-            const accessToken = generateAccessToken(userForTokenCreation)
-            const refreshToken = jwt.sign(userForTokenCreation, process.env.REFRESH_TOKEN_SECRET)
+
+            const userid = user.user_id;
+            console.log(userid);
+            const accessToken = generateAccessToken(userid);
+            const refreshToken = jwt.sign({ user_id: userid }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '90 days' });
             const tokenToSave = await RefreshTokenModel({
                 token: refreshToken,
-                user_id: user.user_id
+                user_id: userid
             });
             await tokenToSave.save();
             logger.info(`Returning tokens for ${user.name}`)
@@ -101,7 +102,6 @@ router.delete('/logout', async (req, res) => {
         logger.error(err.message);
         res.status(500).json({ message: err.message });
     }
-
 });
 
 router.get('/getinfo', authorizeUser, async (req, res) => {
@@ -120,23 +120,42 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
 
 //Endpoint for creating a new access token
 router.post('/token', async (req, res) => {
-    const refreshToken = req.body.token;
-    if (refreshToken == null) { return res.sendStatus(401); };
-    let tokenFromDB = await RefreshTokenModel.findOne({ token: refreshToken });
-    if (tokenFromDB == null) { return res.sendStatus(403); };
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    const reqRefreshToken = req.body.refreshToken;
+    const reqInvalidAccessToken = req.body.accessToken;
+
+    let resAccessToken;
+
+    if (reqRefreshToken == null) { logger.warn('RefreshToken is null'); return res.sendStatus(401); };
+    let tokenFromDB = await RefreshTokenModel.findOne({ token: reqRefreshToken });
+    if (tokenFromDB == null) { logger.info('RefreshToken not found in DB'); return res.sendStatus(403); };
+
+    jwt.verify(reqRefreshToken, process.env.REFRESH_TOKEN_SECRET, (err, object) => {
         if (err) {
             logger.error(err.message);
             return res.status(403).json({ message: err.message });
         }
-        const accessToken = generateAccessToken({ name: user.name });
-        logger.info(`Returning new access token for ${user.name}`);
-        res.status(200).json({ accessToken: accessToken });
-
+        logger.info(`RefreshToken is valid for ${object.user_id}`);
+        resAccessToken = generateAccessToken(object.user_id);
+        logger.info(resAccessToken);
     });
+    jwt.verify(reqInvalidAccessToken, process.env.ACCESS_TOKEN_SECRET, (err, user_id) => {
+        if (err) {
+            console.log(err.message);
+            if (err.message == "jwt expired") {
+                logger.info('JWT is expired, creating a new one');
+                console.log(user_id);
+                generateAccessToken(user_id);
+            };
 
+        } else {
+            logger.info('All good, why you here');
+        }
+    })
 
+    res.status(200).json({ accessToken: resAccessToken });
 });
+
+
 function authorizeUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -150,15 +169,15 @@ function authorizeUser(req, res, next) {
             logger.error(err.message);
             return res.status(403).json({ message: err.message });
         }
-        logger.info(`User "${user.name}" authorized`);
-        req.user = user;
+        logger.info(`User "${user.user_id}" authorized`);
+        req.user_id = user.user_id;
         next();
     })
 }
 
-function generateAccessToken(accessTokenUser) {
-    logger.info(`Generating access token for ${accessTokenUser.name}`)
-    return jwt.sign(accessTokenUser, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
+function generateAccessToken(user_id) {
+    logger.info(`Generating access token for ${user_id}`);
+    return jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
 }
 
 async function getUserInfo(username) {

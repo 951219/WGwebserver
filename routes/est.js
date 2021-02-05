@@ -15,7 +15,7 @@ const logger = require('pino')({
 
 
 router.get('/get/:word', authorizeUser, getWord, (req, res) => {
-    addToUserDictionary(res.word, req.user.name);
+    addToUserDictionary(res.word, req.user_id);
     res.status(200).json(res.word);
 });
 
@@ -33,7 +33,7 @@ router.get('/getall/', authorizeUser, async (req, res) => {
 
 //TODO broken - bundle for 1 round of guessing, pulling from the users Word db
 router.get('/getuserwords/', authorizeUser, async (req, res) => {
-    let userData = await getUserInfo(req.user.name);
+    let userData = await getUserInfo(req.user_id);
     // let words = await getUserWordObjects(userData);
     res.status(200).json({ message: "broken" });
 });
@@ -169,11 +169,11 @@ async function getWord(req, res, next) {
     next();
 }
 
-async function addToUserDictionary(wordObject, username) {
+async function addToUserDictionary(wordObject, userid) {
     wordObject = wordObject[0];
     //1. get that user since you can only add, if you have an account
     let user = await UserModel.findOne({
-        username: username
+        user_id: userid
     });
 
     if (user !== null) {
