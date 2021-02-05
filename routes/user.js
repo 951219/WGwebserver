@@ -16,7 +16,7 @@ const logger = require('pino')({
 //Sign up
 router.get('/signup', (req, res) => {
     // TODO HTML form to fill so the user could sign up
-    res.json('HTML form to fill so the user could sign up')
+    res.json('HTML form to fill so the user could sign up');
 })
 
 
@@ -40,7 +40,7 @@ router.post('/signup', async (req, res) => {
     } catch (err) {
         logger.error(err.message);
         res.status(500);
-    }
+    };
 });
 
 
@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
         let message = 'Please fill out all fields';
         logger.warn(message);
         return res.status(400).json({ message });
-    }
+    };
 
     const user = await UserModel.findOne({
         username: username
@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
         let message = `Cannot find user ${username}`;
         logger.warn(message);
         return res.status(400).json({ message });
-    }
+    };
 
     try {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
@@ -77,7 +77,7 @@ router.post('/login', async (req, res) => {
                 user_id: userid
             });
             await tokenToSave.save();
-            logger.info(`Returning tokens for ${user.name}`)
+            logger.info(`Returning tokens for ${userid}`);
             res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken });
         } else {
             let message = `User ${username} is not allowed here`;
@@ -87,42 +87,40 @@ router.post('/login', async (req, res) => {
     } catch (err) {
         logger.error(err.message);
         res.status(500).send(err.message);
-    }
+    };
 });
 
-// Deleting the refreshtoken/loggin out, so the customer has to generate a new one once they log in again.
+// TODO Deleting the refreshtoken/loggin out, so the customer has to generate a new one once they log in again.
 router.delete('/logout', async (req, res) => {
     try {
         await RefreshTokenModel.deleteOne({
             token: req.body.token
         });
-        logger.info('Logged out')
+        logger.info('Logged out');
         res.sendStatus(204);
     } catch (err) {
         logger.error(err.message);
         res.status(500).json({ message: err.message });
-    }
+    };
 });
 
 router.get('/getinfo', authorizeUser, async (req, res) => {
     try {
         const user = await UserModel.findOne({
             username: req.user.name
-        })
-        logger.info(`Found the user ${req.user.name}, returning it`)
+        });
+        logger.info(`Found the user ${req.user.name}, returning it`);
         res.status(200).json(user);
-    }
-    catch (err) {
-        logger.error(err.message)
-        res.status(500).json({ message: err.message })
-    }
+    } catch (err) {
+        logger.error(err.message);
+        res.status(500).json({ message: err.message });
+    };
 });
 
 //Endpoint for creating a new access token
 router.post('/token', async (req, res) => {
     const reqRefreshToken = req.body.refreshToken;
     const reqInvalidAccessToken = req.body.accessToken;
-
     let resAccessToken;
 
     if (reqRefreshToken == null) { logger.warn('RefreshToken is null'); return res.sendStatus(401); };
@@ -142,15 +140,16 @@ router.post('/token', async (req, res) => {
         if (err) {
             console.log(err.message);
             if (err.message == "jwt expired") {
-                logger.info('JWT is expired, creating a new one');
-                console.log(user_id);
+                logger.info(`accessToken status: ${err.message}, creating a new one`);
                 generateAccessToken(user_id);
+            } else {
+                logger.info(`accessToken status: ${err.message}`);
+                res.json({ message: err.message });
             };
-
         } else {
             logger.info('All good, why you here');
-        }
-    })
+        };
+    });
 
     res.status(200).json({ accessToken: resAccessToken });
 });
@@ -160,40 +159,39 @@ function authorizeUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) {
-        logger.warn(`Token is null`)
-        return res.sendStatus(401)
+        logger.warn(`Token is null`);
+        return res.sendStatus(401);
     };
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) {
             logger.error(err.message);
             return res.status(403).json({ message: err.message });
-        }
+        };
         logger.info(`User "${user.user_id}" authorized`);
         req.user_id = user.user_id;
         next();
-    })
-}
+    });
+};
 
 function generateAccessToken(user_id) {
     logger.info(`Generating access token for ${user_id}`);
     return jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
-}
+};
 
 async function getUserInfo(username) {
     try {
         const user = await UserModel.findOne({
             username: username
-        })
-        logger.info(`Got information for ${username}, returning it`)
+        });
+        logger.info(`Got information for ${username}, returning it`);
         return user;
-    }
-    catch (err) {
+    } catch (err) {
         logger.error(err.message);
         return { message: err.message };
-    }
+    };
 
-}
+};
 
 module.exports = {
     router: router,

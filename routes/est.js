@@ -56,7 +56,7 @@ async function searchEkilexForAWord(queryWord) {
         const json = await fetch_response.json();
 
         if (json['totalCount'] == 0) {
-            logger.warn(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`)
+            logger.warn(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`);
             return { message: `No such word found: ${queryWord}` }
         } else {
             logger.info(`Success -> searchEkilexForAWord() -> total count for word ${queryWord}: ${json['totalCount']}`);
@@ -65,9 +65,9 @@ async function searchEkilexForAWord(queryWord) {
     } catch (err) {
         logger.error(err.message);
         return { message: err.message };
-    }
+    };
 
-}
+};
 
 // 2. Getting the definitions by word id - https://ekilex.eki.ee/api/word/details/{wordID}
 async function getWordDetailsByWordId(wordId) {
@@ -81,9 +81,9 @@ async function getWordDetailsByWordId(wordId) {
     } catch (err) {
         logger.error(err.message);
         return { message: err.message };
-    }
+    };
 
-}
+};
 // 3. Create a word from word Details
 async function createAWordFromEkilexData(wordDetails) {
     let wordId = wordDetails["lexemes"][0]["wordId"];
@@ -97,20 +97,20 @@ async function createAWordFromEkilexData(wordDetails) {
     lexemes.forEach(element => {
         element["meaning"]["definitions"].forEach(item => {
             definitions.push(item["value"]);
-        })
+        });
     });
 
     lexemes.forEach(element => {
         element["usages"].forEach(item => {
             examples.push(item["value"]);
-        })
+        });
     });
 
     return { wordId, word, definitions, examples };
-}
+};
 
 async function postWordToDB(wordObject) {
-    console.log(`Posting word ${wordObject.word} to DB`);
+    logger.info(`Posting word ${wordObject.word} to DB`);
 
     const newWord = new Word({
         wordId: wordObject.wordId,
@@ -121,12 +121,14 @@ async function postWordToDB(wordObject) {
     });
 
     try {
-        const postingWord = await newWord.save();
-        logger.info(`Word ${postingWord.word} posted to DB`);
+        await newWord.save();
+        logger.info(`Word ${newWord.word} posted to DB`);
     } catch (err) {
-        logger.error(`Failure -> postWordToDB() -> Word ${postingWord.word} was not added to DB\n ${err.message}`);
-    }
-}
+        // TODO error with word Jänes
+        logger.error(`Failure -> postWordToDB() -> Word ${newWord.word} was not added to DB\n ${err.message}`);
+    };
+};
+
 async function getWord(req, res, next) {
     let requestedWord = req.params.word;
     let responseWord;
@@ -145,7 +147,7 @@ async function getWord(req, res, next) {
                 await postWordToDB(completedWord);
 
                 try {
-                    logger.info('checking from db again');
+                    logger.info('Checking from db again');
                     completedWord = await Word.find({
                         word: requestedWord
                     });
@@ -153,19 +155,19 @@ async function getWord(req, res, next) {
                 } catch (err) {
                     logger.error(err.message);
                     return res.status(500).json({ message: err.message });
-                }
+                };
             } else {
                 logger.warn(ekilexWord.message);
                 return res.status(500).json({ message: ekilexWord.message });
-            }
+            };
         } else {
             logger.info(`Found the word ${req.params.word} from DB and returning it`);
             res.word = responseWord;
-        }
+        };
     } catch (err) {
         logger.error(err.message);
         return res.status(500).json({ message: err.message });
-    }
+    };
     next();
 }
 
@@ -176,7 +178,7 @@ async function addToUserDictionary(wordObject, userid) {
         user_id: userid
     });
 
-    if (user !== null) {
+    if (user !== undefined || user !== null) {
         //2. check if they already have it
         let list = user.words;
         let found = list.find((element) => element.word_id == wordObject.wordId);
@@ -196,10 +198,10 @@ async function addToUserDictionary(wordObject, userid) {
                 });
             } catch (err) {
                 logger.error(err.message);
-            }
-        }
-    }
-}
+            };
+        };
+    };
+};
 
 // async function getUserWordObjects(userObject) {
 //     //TODO broken. return 10 random word objects from user DB
