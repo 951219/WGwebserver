@@ -24,7 +24,7 @@ router.get('/random/:number', authorizeUser, async (req, res) => {
     var howmany = parseInt(req.params.number);
     let word = await Word.aggregate([{ $sample: { size: howmany } }]);
     res.status(200).json(word);
-})
+});
 
 router.get('/getall/', authorizeUser, async (req, res) => {
     let words = await Word.find();
@@ -57,7 +57,7 @@ async function searchEkilexForAWord(queryWord) {
 
         if (json['totalCount'] == 0) {
             logger.warn(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`);
-            return { message: `No such word found: ${queryWord}` }
+            return { message: `No such word found: ${queryWord}` };
         } else {
             logger.info(`Success -> searchEkilexForAWord() -> total count for word ${queryWord}: ${json['totalCount']}`);
             return json;
@@ -185,7 +185,7 @@ async function addToUserDictionary(wordObject, userid) {
         if (found !== undefined) {
             logger.info('User already has this word');
         } else {
-            logger.info('User does not have this word, adding it to db');
+            logger.info('User does not have this word, adding it to their db');
             list.push({
                 word_id: wordObject.wordId,
                 lang: 'est',

@@ -17,7 +17,7 @@ const logger = require('pino')({
 router.get('/signup', (req, res) => {
     // TODO HTML form to fill so the user could sign up
     res.json('HTML form to fill so the user could sign up');
-})
+});
 
 
 //Sign up
@@ -117,7 +117,7 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
     };
 });
 
-//Endpoint for creating a new access token
+//Endpoint for checking and creating a new access token if necessary
 router.post('/token', async (req, res) => {
     const reqRefreshToken = req.body.refreshToken;
     const reqInvalidAccessToken = req.body.accessToken;
