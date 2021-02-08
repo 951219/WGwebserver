@@ -193,7 +193,7 @@ async function addToUserDictionary(wordObject, userid) {
                 score: 0
             });
             try {
-                await user.update({
+                await user.updateOne({
                     words: list
                 });
             } catch (err) {
