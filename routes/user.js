@@ -107,9 +107,9 @@ router.delete('/logout', async (req, res) => {
 router.get('/getinfo', authorizeUser, async (req, res) => {
     try {
         const user = await UserModel.findOne({
-            username: req.user.name
+            user_id: req.user_id
         });
-        logger.info(`Found the user ${req.user.name}, returning it`);
+        logger.info(`Found the user ${user.user_id}, returning it`);
         res.status(200).json(user);
     } catch (err) {
         logger.error(err.message);
