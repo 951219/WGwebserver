@@ -1,3 +1,4 @@
 /node_modules
 .env
 routes/routes.rest
+.DS_Store

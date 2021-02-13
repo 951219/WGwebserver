@@ -22,7 +22,7 @@ router.get('/signup', (req, res) => {
 
 //Sign up
 router.post('/signup', async (req, res) => {
-    let username = req.body.username;
+    let username = req.body.username.toLowerCase();
     let pw_plain = req.body.password;
     let userid = crypto.randomBytes(20).toString('hex');
 
