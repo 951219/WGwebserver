@@ -120,6 +120,8 @@ async function postWordToDB(wordObject) {
         timeAdded: Date.now()
     });
 
+    console.log(newWord);
+
     try {
         await newWord.save();
         logger.info(`Word ${newWord.word} posted to DB`);

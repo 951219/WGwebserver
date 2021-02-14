@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+// TODO word incasesensitive
 const newEstWordSchema = new mongoose.Schema({
     word: {
         type: String,
@@ -20,7 +20,7 @@ const newEstWordSchema = new mongoose.Schema({
         required: true,
         unique: true
     }
-})
+});
 
 
 module.exports = mongoose.model('estWord', newEstWordSchema);

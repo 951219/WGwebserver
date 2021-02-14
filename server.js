@@ -28,17 +28,22 @@ server.use('/est', estRoutes);
 server.use('/user', userRoutes);
 
 
-mongoose.connect(process.env.DB_CONNECTION_STRING, { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connect(process.env.DB_CONNECTION_STRING,
+    {
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+        useNewUrlParser: true
+    });
 const mongodb = mongoose.connection;
-mongodb.on('error', (error) => { logger.error(error) });
-mongodb.once('open', () => { logger.info('Connected to MongoDB!') });
+mongodb.on('error', (error) => { logger.error(error); });
+mongodb.once('open', () => { logger.info('Connected to MongoDB!'); });
 
 server.listen(process.env.PORT, () => {
     if (runningInDevelopement) {
-        logger.info(`Server started in development at http://localhost:${process.env.PORT}`)
+        logger.info(`Server started in development at http://localhost:${process.env.PORT}`);
     }
     else {
-        logger.info(`Server started in production at port: ${process.env.PORT}`)
+        logger.info(`Server started in production at port: ${process.env.PORT}`);
     }
 }
 );

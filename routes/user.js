@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
 
             const userid = user.user_id;
             console.log(userid);
-            const accessToken = generateAccessToken(userid);
+            const accessToken = await generateAccessToken(userid);
             const refreshToken = jwt.sign({ user_id: userid }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '90 days' });
             const tokenToSave = await RefreshTokenModel({
                 token: refreshToken,
@@ -127,21 +127,21 @@ router.post('/token', async (req, res) => {
     let tokenFromDB = await RefreshTokenModel.findOne({ token: reqRefreshToken });
     if (tokenFromDB == null) { logger.info('RefreshToken not found in DB'); return res.sendStatus(403); };
 
-    jwt.verify(reqRefreshToken, process.env.REFRESH_TOKEN_SECRET, (err, object) => {
+    jwt.verify(reqRefreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, object) => {
         if (err) {
             logger.error(err.message);
             return res.status(403).json({ message: err.message });
         }
         logger.info(`RefreshToken is valid for ${object.user_id}`);
-        resAccessToken = generateAccessToken(object.user_id);
-        logger.info(resAccessToken);
+        resAccessToken = await generateAccessToken(object.user_id);
+        // logger.info(resAccessToken);
     });
-    jwt.verify(reqInvalidAccessToken, process.env.ACCESS_TOKEN_SECRET, (err, user_id) => {
+    jwt.verify(reqInvalidAccessToken, process.env.ACCESS_TOKEN_SECRET, async (err, user_id) => {
         if (err) {
             console.log(err.message);
             if (err.message == "jwt expired") {
                 logger.info(`accessToken status: ${err.message}, creating a new one`);
-                generateAccessToken(user_id);
+                await generateAccessToken(user_id);
             } else {
                 logger.info(`accessToken status: ${err.message}`);
                 res.json({ message: err.message });
@@ -174,9 +174,9 @@ function authorizeUser(req, res, next) {
     });
 };
 
-function generateAccessToken(user_id) {
+async function generateAccessToken(user_id) {
     logger.info(`Generating access token for ${user_id}`);
-    return jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+    return jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45s' });
 };
 
 async function getUserInfo(username) {
