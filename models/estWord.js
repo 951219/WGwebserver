@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
-// TODO word incasesensitive
+
 const newEstWordSchema = new mongoose.Schema({
     word: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true
     },
     meaning: {
         type: [String],

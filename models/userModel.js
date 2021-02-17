@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
-// TODO name incasesensitive
+
 const userModel = mongoose.Schema({
     user_id: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true
     },
     username: {
         type: String,
