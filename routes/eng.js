@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/engWord');
-const authorizeUser = require('./user').authorizeUser;
+const { authorizeUser } = require('./user');
 const crypto = require('crypto');
 
 
@@ -67,7 +67,7 @@ router.get("/:word", getWord, async (req, res) => {
 //Only for updating score
 router.patch("/:id", authorizeUser, getWord, async (req, res) => {
     if (req.body.score != null) {
-        res.word.score = req.body.score
+        res.word.score = req.body.score;
     }
 
     try {
@@ -76,7 +76,7 @@ router.patch("/:id", authorizeUser, getWord, async (req, res) => {
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
-})
+});
 
 // get all from Mongo
 router.get('/', authorizeUser, async (req, res) => {
@@ -84,9 +84,9 @@ router.get('/', authorizeUser, async (req, res) => {
         const words = await Word.find();
         res.send(words);
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
-})
+});
 
 
 //Functions 
@@ -115,7 +115,7 @@ async function getWord(req, res, next) {
                     return res.status(500).json({ message: err.message });
                 }
             } else {
-                return res.status(500).json({ message: `no word found for ${requestedWord}` })
+                return res.status(500).json({ message: `no word found for ${requestedWord}` });
             }
 
 
@@ -139,7 +139,7 @@ async function searchOwlbotForAWord(queryWord) {
             return {
                 message: `No such word found: ${queryWord}`,
                 error: err.message
-            }
+            };
         });
 
         const json = await fetch_response.json();
@@ -150,7 +150,7 @@ async function searchOwlbotForAWord(queryWord) {
 
         } else {
             logger.warn(`Failure -> searchOwlbotForAWord() -> No word returned for ${queryWord}`);
-            return { message: `No such word found: ${queryWord}` }
+            return { message: `No such word found: ${queryWord}` };
         }
     } catch (err) {
         logger.error(err.message);
@@ -176,7 +176,7 @@ async function createAWordFromOwlbotData(data) {
                 examples.push(element.example);
             }
         }
-    })
+    });
     return { word, definitions, examples };
 }
 

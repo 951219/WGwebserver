@@ -3,7 +3,7 @@ if (runningInDevelopement) require('dotenv/config');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const body_parser = require('body-parser');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const engRoutes = require('./routes/eng');
 const estRoutes = require('./routes/est');
@@ -19,7 +19,7 @@ const logger = require('pino')({
 const server = express();
 
 //TODO morgan configuration
-server.use(body_parser.json());
+server.use(bodyParser.json());
 server.use(morgan('tiny', { immediate: true }));
 server.use(cors());
 server.use(express.urlencoded({ extended: false }));

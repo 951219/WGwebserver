@@ -3,8 +3,8 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
-const authorizeUser = require('./user').authorizeUser;
-const getUserInfo = require('./user').getUserInfo;
+const { authorizeUser } = require('./user');
+const { getUserInfo } = require('./user');
 
 const logger = require('pino')({
     prettyPrint: {
@@ -126,7 +126,6 @@ async function postWordToDB(wordObject) {
         await newWord.save();
         logger.info(`Word ${newWord.word} posted to DB`);
     } catch (err) {
-        // TODO error with word Jänes
         logger.error(`Failure -> postWordToDB() -> Word ${newWord.word} was not added to DB\n ${err.message}`);
     };
 };

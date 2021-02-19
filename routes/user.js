@@ -119,15 +119,15 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
 
 //Endpoint for checking and creating a new access token if necessary
 router.post('/token', async (req, res) => {
-    const reqRefreshToken = req.body.refreshToken;
-    const reqInvalidAccessToken = req.body.accessToken;
+    const { refreshToken } = req.body;
+    const { accessToken } = req.body;
     let resAccessToken;
 
-    if (reqRefreshToken == null) { logger.warn('RefreshToken is null'); return res.sendStatus(401); };
-    let tokenFromDB = await RefreshTokenModel.findOne({ token: reqRefreshToken });
+    if (refreshToken == null) { logger.warn('RefreshToken is null'); return res.sendStatus(401); };
+    let tokenFromDB = await RefreshTokenModel.findOne({ token: refreshToken });
     if (tokenFromDB == null) { logger.info('RefreshToken not found in DB'); return res.sendStatus(403); };
 
-    jwt.verify(reqRefreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, object) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, object) => {
         if (err) {
             logger.error(err.message);
             return res.status(403).json({ message: err.message });
@@ -136,9 +136,9 @@ router.post('/token', async (req, res) => {
         resAccessToken = await generateAccessToken(object.user_id);
         // logger.info(resAccessToken);
     });
-    jwt.verify(reqInvalidAccessToken, process.env.ACCESS_TOKEN_SECRET, async (err, user_id) => {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, user_id) => {
         if (err) {
-            console.log(err.message);
+            logger.error(err.message);
             if (err.message == "jwt expired") {
                 logger.info(`accessToken status: ${err.message}, creating a new one`);
                 await generateAccessToken(user_id);
