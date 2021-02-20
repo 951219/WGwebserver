@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
 });
 
 // TODO Deleting the refreshtoken/loggin out, so the customer has to generate a new one once they log in again.
-router.delete('/logout', async (req, res) => {
+router.post('/logout', async (req, res) => {
     try {
         await RefreshTokenModel.deleteOne({
             token: req.body.token
