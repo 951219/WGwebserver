@@ -149,7 +149,10 @@ router.post('/token', async (req, res) => {
                 return res.status(403).json({ message: err.message });
             };
         } else {
-            logger.info('accessToken is valid and you dont need a new one');
+            var message = 'accessToken is valid and you dont need a new one';
+            logger.info(message);
+            return res.status(200).json({ accessToken: accessToken });
+
         };
     });
 
