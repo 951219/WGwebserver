@@ -69,7 +69,7 @@ router.post('/login', async (req, res) => {
         if (await bcrypt.compare(pw_plain, user.pw_hash)) {
 
             const userid = user.user_id;
-            console.log(userid);
+            logger.info(`Logged in: ${userid}`);
             const accessToken = await generateAccessToken(userid);
             const refreshToken = jwt.sign({ user_id: userid }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '90 days' });
             const tokenToSave = await RefreshTokenModel({
@@ -109,7 +109,7 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
         const user = await UserModel.findOne({
             user_id: req.user_id
         });
-        logger.info(`Found the user ${user.user_id}, returning it`);
+        logger.info(`Returing the user ${user.user_id}`);
         res.status(200).json(user);
     } catch (err) {
         logger.error(err.message);
@@ -121,37 +121,39 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
 router.post('/token', async (req, res) => {
     const { refreshToken } = req.body;
     const { accessToken } = req.body;
-    let resAccessToken;
+
 
     if (refreshToken == null) { logger.warn('RefreshToken is null'); return res.sendStatus(401); };
     let tokenFromDB = await RefreshTokenModel.findOne({ token: refreshToken });
     if (tokenFromDB == null) { logger.info('RefreshToken not found in DB'); return res.sendStatus(403); };
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, object) => {
+    var user;
+    await jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, object) => {
         if (err) {
             logger.error(err.message);
             return res.status(403).json({ message: err.message });
         }
         logger.info(`RefreshToken is valid for ${object.user_id}`);
-        resAccessToken = await generateAccessToken(object.user_id);
+        user = object;
+        // resAccessToken = await generateAccessToken(object.user_id);
         // logger.info(resAccessToken);
     });
-    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, user_id) => {
+    await jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err) => {
         if (err) {
-            logger.error(err.message);
             if (err.message == "jwt expired") {
-                logger.info(`accessToken status: ${err.message}, creating a new one`);
-                await generateAccessToken(user_id);
+                logger.info(`AccessToken status: ${err.message}, creating a new one`);
+                var resAccessToken = await generateAccessToken(user.user_id);
+                res.status(200).json({ accessToken: resAccessToken });
             } else {
                 logger.info(`accessToken status: ${err.message}`);
-                res.json({ message: err.message });
+                return res.status(403).json({ message: err.message });
             };
         } else {
-            logger.info('All good, why you here');
+            logger.info('accessToken is valid and you dont need a new one');
         };
     });
 
-    res.status(200).json({ accessToken: resAccessToken });
+
 });
 
 
@@ -176,7 +178,7 @@ function authorizeUser(req, res, next) {
 
 async function generateAccessToken(user_id) {
     logger.info(`Generating access token for ${user_id}`);
-    return jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45s' });
+    return await jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45s' });
 };
 
 async function getUserInfo(username) {
