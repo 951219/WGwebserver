@@ -139,24 +139,21 @@ router.post('/token', async (req, res) => {
         // logger.info(resAccessToken);
     });
     await jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err) => {
+        var resAccessToken = await generateAccessToken(user.user_id);
         if (err) {
             if (err.message == "jwt expired") {
                 logger.info(`AccessToken status: ${err.message}, creating a new one`);
-                var resAccessToken = await generateAccessToken(user.user_id);
                 res.status(200).json({ accessToken: resAccessToken });
             } else {
                 logger.info(`accessToken status: ${err.message}`);
                 res.status(403).json({ message: err.message });
             };
         } else {
-            var message = 'accessToken is valid and you dont really need one, still sending it.';
-            logger.info(message);
-            res.status(200).json({ accessToken: accessToken });
+            logger.info('accessToken is valid and you dont really need one, still sending you the new one.');
+            res.status(200).json({ accessToken: resAccessToken });
 
         };
     });
-
-
 });
 
 
