@@ -146,12 +146,12 @@ router.post('/token', async (req, res) => {
                 res.status(200).json({ accessToken: resAccessToken });
             } else {
                 logger.info(`accessToken status: ${err.message}`);
-                return res.status(403).json({ message: err.message });
+                res.status(403).json({ message: err.message });
             };
         } else {
-            var message = 'accessToken is valid and you dont need a new one';
+            var message = 'accessToken is valid and you dont really need one, still sending it.';
             logger.info(message);
-            return res.status(200).json({ accessToken: accessToken });
+            res.status(200).json({ accessToken: accessToken });
 
         };
     });
