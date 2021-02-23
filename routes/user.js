@@ -108,7 +108,7 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
     try {
         const user = await UserModel.findOne({
             user_id: req.user_id
-        });
+        }).select('pw_hash');
         logger.info(`Returing the user ${user.user_id}`);
         res.status(200).json(user);
     } catch (err) {
@@ -135,9 +135,8 @@ router.post('/token', async (req, res) => {
         }
         logger.info(`RefreshToken is valid for ${object.user_id}`);
         user = object;
-        // resAccessToken = await generateAccessToken(object.user_id);
-        // logger.info(resAccessToken);
     });
+
     await jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err) => {
         var resAccessToken = await generateAccessToken(user.user_id);
         if (err) {
