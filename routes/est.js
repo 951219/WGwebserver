@@ -15,8 +15,18 @@ const logger = require('pino')({
 
 
 router.get('/get/:word', authorizeUser, getWord, (req, res) => {
+    // addToUserDictionary(res.word, req.user_id);
+    res.status(200).json(res.word);
+});
+
+router.get('/add/:word', authorizeUser, getWord, (req, res) => {
     addToUserDictionary(res.word, req.user_id);
     res.status(200).json(res.word);
+});
+
+router.delete('/delete/:word_id', authorizeUser, (req, res) => {
+    removeFromUserDictionary(req.params.word_id, req.user_id);
+    res.status(200).json({ message: 'deleted' });
 });
 
 //TODO: getting number of random entries from mongo, might contain duplicates
@@ -200,6 +210,33 @@ async function addToUserDictionary(wordObject, userid) {
             } catch (err) {
                 logger.error(err.message);
             };
+        };
+    };
+};
+
+
+async function removeFromUserDictionary(word_id, userid) {
+
+    let user = await UserModel.findOne({
+        user_id: userid
+    });
+
+    if (user !== undefined || user !== null) {
+        let list = user.words;
+
+        let found = list.find((element) => element.word_id == word_id);
+        if (found !== undefined) {
+            logger.info('User has this word, removing it.');
+            list.remove(found);
+            try {
+                await user.updateOne({
+                    words: list
+                });
+            } catch (err) {
+                logger.error(err.message);
+            };
+        } else {
+            logger.info('User does not have this word');
         };
     };
 };
