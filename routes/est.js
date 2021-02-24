@@ -19,7 +19,7 @@ router.get('/get/:word', authorizeUser, getWord, (req, res) => {
     res.status(200).json(res.word);
 });
 
-router.get('/save/:word_id', authorizeUser, (req, res) => {
+router.post('/save/:word_id', authorizeUser, (req, res) => {
     saveToUserDictionary(req.params.word_id, req.user_id);
     res.status(200).json({ message: 'Word saved' });
 });
