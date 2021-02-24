@@ -108,7 +108,7 @@ router.get('/getinfo', authorizeUser, async (req, res) => {
     try {
         const user = await UserModel.findOne({
             user_id: req.user_id
-        }).select('pw_hash');
+        }).select('-pw_hash');
         logger.info(`Returing the user ${user.user_id}`);
         res.status(200).json(user);
     } catch (err) {
