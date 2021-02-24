@@ -19,14 +19,14 @@ router.get('/get/:word', authorizeUser, getWord, (req, res) => {
     res.status(200).json(res.word);
 });
 
-router.get('/add/:word', authorizeUser, getWord, (req, res) => {
-    addToUserDictionary(res.word, req.user_id);
-    res.status(200).json(res.word);
+router.get('/save/:word_id', authorizeUser, (req, res) => {
+    addToUserDictionary(req.params.word_id, req.user_id);
+    res.status(200).json({ message: 'Word saved' });
 });
 
-router.delete('/delete/:word_id', authorizeUser, (req, res) => {
+router.delete('/remove/:word_id', authorizeUser, (req, res) => {
     removeFromUserDictionary(req.params.word_id, req.user_id);
-    res.status(200).json({ message: 'deleted' });
+    res.status(200).json({ message: 'Word removed' });
 });
 
 //TODO: getting number of random entries from mongo, might contain duplicates
@@ -42,11 +42,11 @@ router.get('/getall/', authorizeUser, async (req, res) => {
 });
 
 //TODO broken - bundle for 1 round of guessing, pulling from the users Word db
-router.get('/getuserwords/', authorizeUser, async (req, res) => {
-    let userData = await getUserInfo(req.user_id);
-    // let words = await getUserWordObjects(userData);
-    res.status(200).json({ message: "broken" });
-});
+// router.get('/getuserwords/', authorizeUser, async (req, res) => {
+//     let userData = await getUserInfo(req.user_id);
+//     // let words = await getUserWordObjects(userData);
+//     res.status(200).json({ message: "broken" });
+// });
 
 // 1. Getting the word id by word - https://ekilex.eki.ee/api/word/search/{word}/sss
 async function searchEkilexForAWord(queryWord) {
@@ -182,23 +182,28 @@ async function getWord(req, res, next) {
     next();
 }
 
-async function addToUserDictionary(wordObject, userid) {
-    wordObject = wordObject[0];
-    //1. get that user since you can only add, if you have an account
+async function addToUserDictionary(wordId, userId) {
     let user = await UserModel.findOne({
-        user_id: userid
+        user_id: userId
     });
 
     if (user !== undefined || user !== null) {
-        //2. check if they already have it
         let list = user.words;
-        let found = list.find((element) => element.word_id == wordObject.wordId);
+
+        let found = list.find((element) => element.word_id == wordId);
         if (found !== undefined) {
             logger.info('User already has this word');
         } else {
             logger.info('User does not have this word, adding it to their db');
+
+            var wordObject = await Word.findOne({
+                wordId: wordId
+            });
+
+
+            console.log(wordObject);
             list.push({
-                word_id: wordObject.wordId,
+                word_id: wordId,
                 lang: 'est',
                 word: wordObject.word,
                 score: 0
@@ -215,16 +220,15 @@ async function addToUserDictionary(wordObject, userid) {
 };
 
 
-async function removeFromUserDictionary(word_id, userid) {
-
+async function removeFromUserDictionary(wordId, userId) {
     let user = await UserModel.findOne({
-        user_id: userid
+        user_id: userId
     });
 
     if (user !== undefined || user !== null) {
         let list = user.words;
 
-        let found = list.find((element) => element.word_id == word_id);
+        let found = list.find((element) => element.word_id == wordId);
         if (found !== undefined) {
             logger.info('User has this word, removing it.');
             list.remove(found);
