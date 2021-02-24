@@ -20,7 +20,7 @@ router.get('/get/:word', authorizeUser, getWord, (req, res) => {
 });
 
 router.get('/save/:word_id', authorizeUser, (req, res) => {
-    addToUserDictionary(req.params.word_id, req.user_id);
+    saveToUserDictionary(req.params.word_id, req.user_id);
     res.status(200).json({ message: 'Word saved' });
 });
 
@@ -182,7 +182,7 @@ async function getWord(req, res, next) {
     next();
 }
 
-async function addToUserDictionary(wordId, userId) {
+async function saveToUserDictionary(wordId, userId) {
     let user = await UserModel.findOne({
         user_id: userId
     });
