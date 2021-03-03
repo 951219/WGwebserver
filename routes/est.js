@@ -67,7 +67,7 @@ async function searchEkilexForAWord(queryWord) {
 
         if (json['totalCount'] == 0) {
             logger.warn(`Failure -> searchEkilexForAWord() -> Total count for word ${queryWord}: ${json['totalCount']}`);
-            return { message: `No such word found: ${queryWord}` };
+            return { statusCode: 404, message: `No such word found: ${queryWord}` };
         } else {
             logger.info(`Success -> searchEkilexForAWord() -> total count for word ${queryWord}: ${json['totalCount']}`);
             return json;
@@ -167,9 +167,12 @@ async function getWord(req, res, next) {
                     logger.error(err.message);
                     return res.status(500).json({ message: err.message });
                 };
-            } else {
+            } else if (ekilexWord.statusCode == 404) {
                 logger.warn(ekilexWord.message);
-                return res.status(500).json({ message: ekilexWord.message });
+                return res.status(404).json({ message: ekilexWord.message });
+            } else {
+                logger.warn('Error');
+                return res.status(500).json('Error');
             };
         } else {
             logger.info(`Found the word ${req.params.word} from DB and returning it`);
