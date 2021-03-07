@@ -177,7 +177,7 @@ function authorizeUser(req, res, next) {
 
 async function generateAccessToken(user_id) {
     logger.info(`Generating access token for ${user_id}`);
-    return await jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45s' });
+    return await jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' });
 };
 
 async function getUserInfo(username) {

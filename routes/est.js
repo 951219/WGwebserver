@@ -29,11 +29,11 @@ router.delete('/remove/:word_id', authorizeUser, (req, res) => {
     res.status(200).json({ message: 'Word removed' });
 });
 
-//TODO: getting number of random entries from mongo, might contain duplicates
+//TODO: might contain duplicates
 router.get('/random/:number', authorizeUser, async (req, res) => {
     var howmany = parseInt(req.params.number);
-    let word = await Word.aggregate([{ $sample: { size: howmany } }]);
-    res.status(200).json(word);
+    let wordlist = await Word.aggregate([{ $sample: { size: howmany } }]);
+    res.status(200).json(wordlist);
 });
 
 router.get('/getall/', authorizeUser, async (req, res) => {
