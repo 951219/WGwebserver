@@ -82,7 +82,7 @@ router.post('/login', async (req, res) => {
         } else {
             let message = `User ${username} is not allowed here`;
             logger.warn(message);
-            res.status(405).json({ message });
+            res.status(401).json({ message });
         }
     } catch (err) {
         logger.error(err.message);
