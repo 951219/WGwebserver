@@ -268,3 +268,5 @@ module.exports = router;
  https://ekilex.eki.ee/api/meaning/search/profülaktiline
  https://ekilex.eki.ee/api/meaning/details/82513
 */
+
+// TODO report a word, should first try to fetch it again. If it would be marked again broken, then it shoudl direct it to me.
