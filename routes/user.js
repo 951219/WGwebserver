@@ -25,18 +25,30 @@ router.post('/signup', async (req, res) => {
     let username = req.body.username.toLowerCase();
     let pw_plain = req.body.password;
     let userid = crypto.randomBytes(20).toString('hex');
+    // TODO Error handling, if username already exists. return 409
+
 
     try {
-        const hashedPassword = await bcrypt.hash(pw_plain, 10);
-        const user = UserModel({
-            user_id: userid,
-            username: username,
-            pw_hash: hashedPassword
+        const isDuplicate = await UserModel.exists({
+            username: username
         });
-        await user.save();
-        let message = `User ${username} created, ID: ${userid}`;
-        logger.info(message);
-        res.status(201).json({ message });
+        if (isDuplicate) {
+            let message = `User ${username} already exists in db`;
+            logger.info(message);
+            res.status(409).json({ message });
+        } else {
+            const hashedPassword = await bcrypt.hash(pw_plain, 10);
+            await UserModel({
+                user_id: userid,
+                username: username,
+                pw_hash: hashedPassword
+            }).save();
+
+            let message = `User ${username} created, ID: ${userid}`;
+            logger.info(message);
+            res.status(201).json({ message });
+        }
+
     } catch (err) {
         logger.error(err.message);
         res.status(500);
