@@ -25,7 +25,6 @@ router.post('/signup', async (req, res) => {
     let username = req.body.username.toLowerCase();
     let pw_plain = req.body.password;
     let userid = crypto.randomBytes(20).toString('hex');
-    // TODO Error handling, if username already exists. return 409
 
 
     try {
