@@ -3,6 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
+const BrokenWord = require('../models/brokenWord');
 const { authorizeUser } = require('./user');
 const { getUserInfo } = require('./user');
 
@@ -39,6 +40,11 @@ router.get('/random/:number', authorizeUser, async (req, res) => {
 router.get('/getall/', authorizeUser, async (req, res) => {
     let words = await Word.find();
     res.status(200).json(words);
+});
+
+router.post('/postbroken', authorizeUser, (req, res) => {
+    saveToBrokenDB(req.body.wordId, req.body.word);
+    res.status(200).json({ message: `Word ${req.body.word} reported` });
 });
 
 //TODO broken - bundle for 1 round of guessing, pulling from the users Word db
@@ -247,6 +253,26 @@ async function removeFromUserDictionary(wordId, userId) {
         };
     };
 };
+
+async function saveToBrokenDB(wordId, word) {
+    // TODO if already reported before, check by word ID
+    logger.info(`Posting word ${word} to brokenDB`);
+    const brokenWord = new BrokenWord({
+        wordId: wordId,
+        word: word,
+        lang: 'EST'
+    });
+
+    try {
+        await brokenWord.save();
+        logger.info(`Word ${brokenWord.word} posted to broken DB`);
+    } catch (err) {
+        logger.error(`Failure -> saveToBrokenDB() -> Word ${word} was not added to broken DB\n ${err.message}`);
+    };
+
+}
+
+
 
 // async function getUserWordObjects(userObject) {
 //     //TODO broken. return 10 random word objects from user DB
