@@ -5,7 +5,6 @@ const Word = require('../models/estWord');
 const UserModel = require('../models/userModel');
 const BrokenWord = require('../models/brokenWord');
 const { authorizeUser } = require('./user');
-const { getUserInfo } = require('./user');
 
 const logger = require('pino')({
     prettyPrint: {
@@ -256,7 +255,7 @@ async function removeFromUserDictionary(wordId, userId) {
 
 async function saveToBrokenDB(wordId, word) {
     // TODO if already reported before, check by word ID
-    logger.info(`Posting word ${word} to brokenDB`);
+    logger.info(`Posting word ${word} to broken words DB`);
     const brokenWord = new BrokenWord({
         wordId: wordId,
         word: word,
@@ -265,7 +264,7 @@ async function saveToBrokenDB(wordId, word) {
 
     try {
         await brokenWord.save();
-        logger.info(`Word ${brokenWord.word} posted to broken DB`);
+        logger.info(`Word ${word} posted successfully`);
     } catch (err) {
         logger.error(`Failure -> saveToBrokenDB() -> Word ${word} was not added to broken DB\n ${err.message}`);
     };
