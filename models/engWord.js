@@ -17,7 +17,7 @@ const engWordSchema = new mongoose.Schema({
         required: true,
     },
     wordId: {
-        type: String,
+        type: Number,
         required: true,
         unique: true
     }
