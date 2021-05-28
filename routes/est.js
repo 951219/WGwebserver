@@ -59,6 +59,7 @@ async function searchEkilexForAWord(queryWord) {
     const url = `https://ekilex.eki.ee/api/word/search/${encodeURI(queryWord)}/sss`;
 
     try {
+        // TODO fetch to axios
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } }).catch((err) => {
             let response = {
                 message: `No such word found: ${queryWord}`,
@@ -87,7 +88,7 @@ async function searchEkilexForAWord(queryWord) {
 // 2. Getting the definitions by word id - https://ekilex.eki.ee/api/word/details/{wordID}
 async function getWordDetailsByWordId(wordId) {
     let url = `https://ekilex.eki.ee/api/word/details/${wordId}`;
-
+    // TODO fetch to axios
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'ekilex-api-key': process.env.EKILEX_API_KEY } });
         const json = await fetch_response.json();

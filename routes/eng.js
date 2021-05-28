@@ -5,6 +5,7 @@ const Word = require('../models/engWord');
 const { authorizeUser } = require('./user');
 const crypto = require('crypto');
 
+// TODO fetch to axios if implementing a new API
 
 const logger = require('pino')({
     prettyPrint: {
@@ -132,7 +133,7 @@ async function getWord(req, res, next) {
 async function searchOwlbotForAWord(queryWord) {
     logger.info(`Querying owlbot for word ${queryWord}`);
     const url = `https://owlbot.info/api/v4/dictionary/${encodeURI(queryWord)}`;
-
+    // TODO fetch to axios
     try {
         const fetch_response = await fetch(url, { method: 'GET', headers: { 'Authorization': `Token ${process.env.OWLBOT_API_KEY}` } }).catch((err) => {
             logger.warn(`No such word found: ${queryWord}`);
