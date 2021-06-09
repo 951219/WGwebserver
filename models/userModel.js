@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+/* TODO refactor to:
+    Username
+    Full name
+    Email address
+    password
+    */
+
 const userModel = mongoose.Schema({
     user_id: {
         type: String,

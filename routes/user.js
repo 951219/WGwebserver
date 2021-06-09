@@ -22,6 +22,13 @@ router.get('/signup', (req, res) => {
 
 //Sign up
 router.post('/signup', async (req, res) => {
+    /* TODO
+    Username
+    Full name
+    Email address (email format check)
+    password
+    */
+
     let username = req.body.username.toLowerCase();
     let pw_plain = req.body.password;
     let userid = crypto.randomBytes(20).toString('hex');
@@ -57,6 +64,11 @@ router.post('/signup', async (req, res) => {
 
 //Sign IN
 router.post('/login', async (req, res) => {
+    /* TODO
+    refactor to: 
+    Username
+    password
+    */
     let username = req.body.username;
     let pw_plain = req.body.password;
 
